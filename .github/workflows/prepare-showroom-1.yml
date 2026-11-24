@@ -1,0 +1,95 @@
+name: Prepare showroom 1
+on:
+  push:
+    branches: [prepare-showroom-1]
+    paths: [.github/workflows/prepare-showroom-1.yml]
+permissions:
+  contents: write
+jobs:
+  prepare:
+    if: github.repository == 'riley0222yu-del/studio-nine-showroom'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Export public showroom
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { createHash } from 'node:crypto';
+          import { mkdir, readFile, writeFile } from 'node:fs/promises';
+          const origin = 'https://studio-nine-showroom-rack.plaidbutton8.chatgpt.site';
+          const slug = 'room-1837547b-5674-4329-9b7c-4bd9c3f6f265';
+          const output = 'showroom-1';
+          const original = origin + '/' + slug;
+          const types = new Map([['image/webp','webp'], ['image/jpeg','jpg'], ['image/png','png']]);
+          async function load(url) {
+            assert.equal(new URL(url).origin, origin);
+            for (let attempt = 0; attempt < 3; attempt++) {
+              try {
+                const response = await fetch(url, { signal: AbortSignal.timeout(15000), redirect:'error' });
+                if (!response.ok) throw Error('HTTP ' + response.status + ' for ' + url);
+                return response;
+              } catch (error) {
+                if (attempt === 2) throw error;
+              }
+            }
+          }
+          const catalog = await (await load(origin + '/api/showrooms/' + slug + '/catalog')).json();
+          assert.equal(catalog.showroom.slug, slug);
+          assert.equal(catalog.showroom.name, '1');
+          assert.equal(catalog.showroom.count, catalog.items.length);
+          assert(catalog.items.length > 0);
+          await mkdir(output + '/images', { recursive: true });
+          const media = new Map();
+          async function savePhoto(asset) {
+            const url = new URL(asset, origin).href;
+            const existing = media.get(url);
+            if (existing) return existing;
+            const response = await load(url);
+            const extension = types.get(response.headers.get('content-type')?.split(';')[0]);
+            assert(extension, 'Unexpected content type for ' + url);
+            const bytes = Buffer.from(await response.arrayBuffer());
+            assert(bytes.length > 0 && bytes.length < 15_000_000);
+            const name = createHash('sha256').update(bytes).digest('hex').slice(0, 24) + '.' + extension;
+            const relative = output + '/images/' + name;
+            await writeFile(relative, bytes);
+            media.set(url, relative);
+            return relative;
+          }
+          for (const item of catalog.items) {
+            assert(item.published && !item.trashedAt);
+            for (const angle of ['front','side','back']) {
+              assert(typeof item.assets[angle] === 'string');
+              item.assets[angle] = await savePhoto(item.assets[angle]);
+            }
+          }
+          const quote = value => JSON.stringify(value).replaceAll('<', '\\u003c');
+          let html = await readFile('index.html', 'utf8');
+          function replace(pattern, value) {
+            assert(pattern.test(html), 'Missing template field: ' + pattern.source);
+            html = html.replace(pattern, () => value);
+          }
+          replace(/^const showroomPath = .*;$/m, 'const showroomPath = ' + quote(output) + ';');
+          replace(/^const originalShowroom = .*;$/m, 'const originalShowroom = ' + quote(original) + ';');
+          replace(/^managerLink\.href = .*;$/m, 'managerLink.href = ' + quote(origin + '/admin/?room=' + slug) + ';');
+          replace(/^  items = .*;$/m, '  items = ' + quote(catalog.items) + ';');
+          replace(/^  studioRoomName = .*;$/m, '  studioRoomName = ' + quote('展厅 1') + ';');
+          new Function(html.match(/<script>\n([\s\S]*)<\/script>/)[1]);
+          await writeFile(output + '/index.html', html);
+          console.log('Verified ' + catalog.items.length + ' public pieces and ' + media.size + ' photos.');
+          NODE
+      - name: Stage only the showroom files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git switch -c publish/showroom-1
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- showroom-1
+          git commit -m 'Add showroom 1 public page'
+          git push origin HEAD:refs/heads/publish/showroom-1
