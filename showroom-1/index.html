@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#ffffff"><title>STUDIO NINE · The Rack</title>
+<style>
+:root{--ink:#171715;--muted:#88867e;--ease:cubic-bezier(.2,.75,.25,1)}*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:13px Arial,"Microsoft YaHei",sans-serif}button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:focus-visible{outline:1px solid #444;outline-offset:5px}button svg{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}header{height:112px;padding:0 5vw;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;transition:opacity .45s}.plain{border:0;background:none;padding:12px 0;letter-spacing:.08em;font-size:12px}.about{justify-self:start}.wordmark{font-size:30px;letter-spacing:-1px;font-weight:600}.tools{justify-self:end;display:flex;gap:20px}.icon{border:0;background:none;width:28px;height:32px;padding:4px}.icon svg{width:22px;height:22px}.home{height:100svh;min-height:600px;display:flex;flex-direction:column;overflow:hidden}.rack-scroll{flex:1;min-height:0;display:flex;align-items:center;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;transition:filter .7s,opacity .7s}.rack-scroll::-webkit-scrollbar{display:none}.rack{position:relative;flex:none;width:min(1040px,84vw);height:390px;margin:30px auto 0;--height:300px;--pitch:clamp(80px,10.6vw,120px)}.rail{position:absolute;top:0;left:0;right:0;height:6px;border-radius:5px;background:linear-gradient(#c9c8c3,#fff 24%,#888982 57%,#e6e5e0 88%);box-shadow:0 2px 2px #0002}.rail:before,.rail:after{position:absolute;content:'';width:12px;height:31px;top:-12px;border-radius:50%;background:linear-gradient(90deg,#8f8e87,#dddcd6,#8d8b83)}.rail:before{left:-5px}.rail:after{right:-5px}.slot{position:absolute;left:50%;top:0;width:var(--pitch);height:calc(var(--height) + 80px);margin-left:calc(var(--pitch)/-2);transform:translateX(calc(var(--offset)*var(--pitch) + var(--shift,0px)));transition:transform .7s var(--ease);z-index:1}.piece{position:relative;display:block;width:100%;height:100%;border:0;background:none;padding:0;outline-offset:-10px;touch-action:pan-x}.hook{position:absolute;top:-6px;left:calc(50% - 5px);width:12px;height:38px;border:2px solid #a39e92;border-bottom:0;border-left-color:transparent;border-radius:60% 60% 0 0;z-index:1;transition:transform .6s var(--ease)}.hanger{position:absolute;left:50%;top:30px;width:100px;height:36px;transform:translateX(-50%) scaleX(.2);transition:transform .65s var(--ease);background:linear-gradient(100deg,#c2a383,#e4cbb0,#b89a7b);clip-path:polygon(46% 0,54% 0,60% 29%,100% 92%,98% 100%,50% 54%,2% 100%,0 92%,40% 29%)}.views{position:absolute;top:52px;left:50%;height:var(--height);width:calc(var(--height)*1.02);transform:translateX(-50%);transform-origin:50% 0;transition:transform .7s var(--ease);mix-blend-mode:multiply;pointer-events:none}.view{position:absolute;top:0;left:50%;height:100%;width:100%;object-fit:contain;transform:translateX(-50%);opacity:0;transition:opacity .5s ease,transform .65s var(--ease);user-select:none;-webkit-user-drag:none}.view.side{opacity:1}.view.front{transform:translateX(-50%) scaleX(.8)}.slot.active{z-index:10}.slot.active .side{opacity:0;transform:translateX(-50%) scaleX(.7)}.slot.active .front{opacity:1;transform:translateX(-50%) scaleX(1)}.slot.active .views{transform:translateX(-50%) scale(1.12)}.slot.active .hanger{transform:translateX(-50%) scaleX(1)}.caption{position:absolute;top:calc(var(--height)*1.12 + 75px);left:50%;transform:translate(-50%,5px);width:260px;text-align:center;font-size:10px;letter-spacing:.06em;color:#777;opacity:0;transition:.4s}.slot.active .caption{opacity:1;transform:translate(-50%,0)}.hint{display:flex;justify-content:center;align-items:center;gap:25px;margin:0 0 7vh;font-size:11px;letter-spacing:.13em;color:#8c8980}.hint:before,.hint:after{content:'';width:30px;height:1px;background:#b8b5ad}.hint-mobile{display:none}.collection{position:absolute;bottom:24px;left:5vw;font-size:9px;letter-spacing:.14em;color:#aaa}.number{position:absolute;right:5vw;bottom:24px;font-size:9px;letter-spacing:.12em;color:#aaa}.loading{font-size:11px;letter-spacing:.12em;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#888}.home.focused header,.home.focused .hint,.home.focused .collection,.home.focused .number{opacity:0}.home.focused .rack-scroll{filter:blur(9px);opacity:.22;pointer-events:none}
+.detail{position:fixed;inset:0;z-index:30;background:rgba(255,255,255,.1);visibility:hidden;opacity:0;transition:opacity .5s,visibility 0s .5s;display:grid;grid-template-rows:1fr;overflow-y:auto}.detail.open{visibility:visible;opacity:1;transition:opacity .5s}.close{position:absolute;right:3vw;top:22px;border:0;background:none;font-size:11px;letter-spacing:.12em;padding:14px;z-index:4}.close b{font-size:21px;font-weight:300;margin-left:7px}.detail-body{width:min(700px,84vw);margin:auto;display:flex;flex-direction:column;align-items:center;text-align:center;padding:60px 0 42px}.detail-art{width:min(480px,70vw);height:clamp(210px,42vh,470px);position:relative;mix-blend-mode:multiply}.detail-art .hook{top:0}.detail-art .hanger{top:34px;transform:translateX(-50%) scaleX(1)}.detail-image{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;animation:reveal .55s var(--ease) both;user-select:none;-webkit-user-drag:none;touch-action:pan-y}.detail h1{font-size:clamp(22px,3vw,34px);font-weight:600;letter-spacing:-.04em;margin:26px 0 10px}.detail .sub{font-size:11px;color:#8b887e;letter-spacing:.06em;margin:0 0 20px}.segmented{display:flex;border:1px solid #aaa79e;border-radius:24px;padding:3px;gap:3px}.segmented button{border:0;background:none;border-radius:20px;min-width:78px;padding:9px 13px;font-size:10px;letter-spacing:.1em}.segmented button[aria-pressed=true]{background:#181816;color:white}.detail .description{font-size:12px;color:#848177;line-height:1.9;max-width:360px;margin:23px 20px 0}.detail-count{font-size:9px;color:#999;letter-spacing:.2em;margin-top:25px}.arrow{position:fixed;top:36vh;border:1px solid #8c8980;border-radius:50%;width:42px;height:42px;background:#fff7;font-size:20px;z-index:3}.prev{left:6vw}.next{right:6vw}.arrow:hover{background:#171715;color:white}.detail-footer{margin-top:22px;font-size:9px;letter-spacing:.1em;color:#aaa}.detail.open .detail-body{animation:reveal .6s var(--ease) both}@keyframes reveal{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}dialog{border:1px solid #e0ded8;padding:34px;width:min(420px,88vw)}dialog::backdrop{background:#fff9;backdrop-filter:blur(8px)}dialog h2{font-size:26px;letter-spacing:-.05em}dialog p{line-height:1.9;color:#888}dialog button{float:right;border:0;background:none}.toast{position:fixed;z-index:100;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 22px;background:#171715;color:#fff;font-size:11px;opacity:0;pointer-events:none;transition:.3s}.toast.show{opacity:1}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(min-height:950px){.rack{--height:360px;height:460px;--pitch:clamp(80px,10.6vw,135px)}.detail-art{height:46vh}}@media(max-width:900px){.rack{width:89vw;--height:260px;--pitch:clamp(65px,10.6vw,100px);height:365px}.wordmark{font-size:25px}.tools{gap:12px}}@media(max-width:600px){header{height:90px;padding:0 22px}.wordmark{font-size:21px}.about{font-size:10px}.tools{gap:6px}.account{display:none}.home{min-height:560px}.rack-scroll{align-items:center;scroll-snap-type:x proximity}.rack{width:calc(var(--count)*130px + 140px);margin:25px 40px 0;--height:300px;--pitch:130px;height:430px}.slot{scroll-snap-align:center}.hint{margin-bottom:9vh;font-size:10px;gap:16px}.hint-desktop{display:none}.hint-mobile{display:inline}.collection,.number{bottom:20px;font-size:8px}.detail-body{padding:62px 0 32px;width:90vw}.detail-art{height:40vh;min-height:260px;width:80vw}.detail h1{font-size:23px;max-width:85vw;margin-top:26px}.close{right:12px;top:12px}.arrow{top:32vh;width:34px;height:34px}.prev{left:12px}.next{right:12px}.segmented button{min-width:72px;padding:10px}.detail .description{font-size:11px;margin-top:18px}.detail-footer{display:none}.detail-count{margin-top:18px}}
+.rack-scroll{padding:0 4vw}.rack{width:max(min(1040px,84vw),calc((var(--count) - 1)*var(--pitch) + 280px))}.rack-nav{border:0;background:none;font-size:18px;padding:8px 12px;color:#777}.rack-nav:disabled{opacity:.25;cursor:default}.hint:before,.hint:after{display:none}.trousers .hanger{top:46px;height:5px;border-radius:2px;clip-path:none;background:linear-gradient(#ddd,#777,#ddd)}.trousers .hanger:before,.trousers .hanger:after{content:'';position:absolute;top:0;width:9px;height:13px;border-radius:2px;background:linear-gradient(90deg,#888,#ddd,#888)}.trousers .hanger:before{left:5px}.trousers .hanger:after{right:5px}.trousers .hook{height:52px}.detail-art.trousers .hanger{top:50px}@media(max-width:600px){.rack-scroll{padding:0}.rack{width:calc(var(--count)*130px + 140px)}.hint{gap:4px}.rack-nav{padding:8px 10px}.collection{letter-spacing:.08em}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+.photo-message{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;line-height:1.8;letter-spacing:.03em;color:#999;background:#fffe;padding:8px 12px;white-space:nowrap;pointer-events:none;z-index:12}.retry-photo{position:absolute;left:50%;top:calc(50% + 38px);transform:translateX(-50%);z-index:13;border:1px solid #aaa;border-radius:20px;background:white;padding:8px 15px;font-size:11px}.view[data-state]:not([data-state=ready]),.detail-image[data-state]:not([data-state=ready]){opacity:0}.photo-message[hidden],.retry-photo[hidden]{display:none}
+</style><style>.home.focused .rack-scroll{filter:blur(12px);opacity:.27}.slot{transition:transform .7s var(--ease),opacity .5s ease}.slot.detail-selected{opacity:0;pointer-events:none}.detail{background:#ffffff24}.detail.open .detail-body{animation:none}.detail-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:7vw;width:min(1240px,84vw);padding:90px 0 55px;align-items:center;text-align:left}.detail-left{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}.detail-art{width:100%;height:clamp(260px,43vh,510px)}.detail-image{animation:none}.detail-right{min-width:0}.detail-body.no-data{grid-template-columns:minmax(0,540px);justify-content:center}.detail-body.no-data .detail-right{display:none}.data-block{margin:0 0 26px;will-change:transform,opacity}.data-block h2{font-size:19px;margin:0 0 19px;font-weight:650}.data-block .unit{float:right;font-size:12px;color:#888;font-weight:400}.table-scroll{overflow:auto;border:1px solid #deded9;border-radius:12px;background:#ffffff45}.data-block table{width:100%;border-collapse:collapse;font-size:14px;text-align:center}.data-block th,.data-block td{padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;min-width:75px}.data-block tr:nth-child(even){background:#efefec60}.data-block th{font-weight:600}.data-block.info-data .table-scroll{border:0;border-radius:0}.info-data th{color:#888;font-weight:400}.info-data td{text-align:left}.size-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:10px;position:relative;isolation:isolate}.size-option{background:transparent;border:1px solid #d7d7d1;border-radius:30px;padding:13px 8px;font-size:17px;transition:color .3s;z-index:1}.size-option[aria-pressed=true]{color:white}.size-slider{position:absolute;background:#1c1c1a;border-radius:30px;pointer-events:none;z-index:0;transition:transform .4s cubic-bezier(.2,.75,.25,1),width .4s,height .4s}.purchase{display:flex;align-items:center;gap:12px}.purchase strong{white-space:nowrap;font-size:23px}.purchase button{flex:1;border:0;border-radius:35px;background:#1c1c1a;color:white;font-size:19px;padding:19px}.purchase-note{font-size:11px;color:#999;line-height:1.6;margin:9px 0}.close{position:fixed;background:#ffffff70;border-radius:24px}.detail .arrow{top:45vh}.detail .prev{left:2vw}.detail .next{right:2vw}.switch-ghost{pointer-events:none!important;z-index:2}.detail .description{white-space:pre-wrap}.detail-right[hidden]{display:none}.product-details-editor{border-top:1px solid #ddd;margin-top:24px;padding-top:18px}.matrix-editor{margin:20px 0;padding:12px;border:1px solid #ddd;border-radius:8px}.matrix-scroll{overflow:auto;max-width:100%}.matrix-editor table{border-collapse:collapse}.matrix-editor td,.matrix-editor th{border:1px solid #ddd;padding:5px;vertical-align:top;min-width:130px}.matrix-editor input{margin:0 0 5px;padding:8px;min-width:110px}.matrix-editor button{padding:5px;font-size:10px;margin:2px}.details-live-preview{overflow:auto;background:#fafbf7;padding:12px;border:1px solid #ddd}.details-live-preview table{border-collapse:collapse;width:100%;font-size:11px}.details-live-preview td,.details-live-preview th{border:1px solid #ddd;padding:6px;white-space:pre-wrap}.product-details-editor>button{font-size:11px;margin:4px}
+@media(max-width:760px){.detail-body{display:block;width:100%;padding:65px 22px 40px}.detail-left{min-height:calc(85svh - 75px);justify-content:center}.detail-art{height:44svh;min-height:260px;width:85vw}.detail-right{margin-top:45px;padding-bottom:24px}.data-block{margin-bottom:32px}.detail h1{font-size:24px}.data-block table{font-size:13px}.detail .prev{left:10px}.detail .next{right:10px}.data-block th,.data-block td{padding:11px 10px}.detail.has-purchase .detail-body{padding-bottom:125px}.purchase-block{position:fixed;bottom:0;left:0;right:0;padding:16px 22px  max(16px,env(safe-area-inset-bottom));background:#fffffff2;border-top:1px solid #ddd;margin:0;z-index:5;backdrop-filter:blur(14px);transform:none!important;opacity:1!important}.purchase button{padding:15px;font-size:17px}.purchase strong{font-size:22px}.purchase-note{margin-bottom:0}.detail-body.no-data{display:block}.detail-count{margin-bottom:18px}.close{z-index:8}}
+@media(prefers-reduced-motion:reduce){.data-block,.size-slider,.slot,.detail,.home .rack-scroll{transition:none!important;animation:none!important;transform:none!important}.data-block{opacity:1!important}}
+
+.slot {
+  --hanger-x: var(--side-hanger-x, 0);
+  --hanger-y: min(var(--side-hanger-y, 0), var(--front-hanger-y, 0));
+  --hanger-width: var(--side-hanger-width, .06);
+  /* Leave the hanger above both silhouettes, including during their crossfade. */
+  --hanger-depth: 14px;
+  --hanger-top: calc(52px + var(--height) * var(--hanger-y) - var(--hanger-depth) - 2px);
+  --hook-end: calc(var(--hanger-top) + 1px);
+}
+.slot.active {
+  --hanger-x: var(--front-hanger-x, 0);
+  --hanger-width: var(--front-hanger-width, .28);
+}
+.slot .hook {
+  left: calc(50% + var(--height) * var(--hanger-x) - 6px);
+  top: -5px;
+  height: 14px;
+  transition: left .55s var(--ease);
+}
+.slot .hook::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 7px;
+  width: 2px;
+  height: var(--hook-end);
+  background: linear-gradient(90deg,#b8b0a2,#858076);
+  transition: height .55s var(--ease);
+}
+.slot .hanger, .slot.active .hanger {
+  left: calc(50% + var(--height) * var(--hanger-x));
+  top: var(--hanger-top);
+  width: clamp(12px, var(--height) * var(--hanger-width), 146px);
+  height: var(--hanger-depth);
+  transform: translateX(-50%);
+  transition: left .55s var(--ease), top .55s var(--ease), width .55s var(--ease);
+}
+.slot.trousers {
+  --hanger-depth: 5px;
+}
+.slot.trousers .hanger {
+  height: 5px;
+  min-width: 18px;
+}
+.slot.trousers .hanger::before, .slot.trousers .hanger::after {height: 5px}
+
+/* Keep animated panels inside the modal. Wide tables scroll inside their own frame. */
+.detail {
+  overflow: hidden;
+  grid-template-columns: minmax(0,1fr);
+  grid-template-rows: minmax(0,1fr) auto;
+  overscroll-behavior-x: none;
+}
+.detail-scroll {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overflow-anchor: none;
+  overscroll-behavior: contain;
+}
+.detail-scroll > .detail-body {flex: none}
+.purchase-dock {z-index: 5; min-width: 0; background: #fcfcfb}
+.purchase-dock[hidden] {display: none}
+.reveal-frame {display: contents}
+.measure-note {margin: 0 0 14px;color: #66655f;font-size: 12px;line-height: 1.45}
+.purchase .presale-label:disabled {cursor: default; opacity: 1; -webkit-text-fill-color: #fff}
+.segmented {position: relative; isolation: isolate}
+.segmented button {position: relative; z-index: 1; transition: color .3s}
+.segmented.slider-ready button[aria-pressed=true] {background: transparent}
+.size-slider {left: 0; top: 0}
+.size-options:not(.slider-ready) button[aria-pressed=true] {background: #1c1c1a}
+.detail-body, .detail-left, .detail-right {min-width: 0}
+.info-pairs {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px 22px;
+  margin: 0;
+}
+.info-pair {
+  display: grid;
+  grid-template-columns: minmax(4em,auto) minmax(0,1fr);
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+}
+.info-pair dt {color: #777; overflow-wrap: anywhere}
+.info-pair dd {margin: 0; overflow-wrap: anywhere}
+@media (max-width: 760px) {
+  .detail-right .data-block {will-change: auto}
+  .reveal-frame {display: flow-root; margin-bottom: 32px}
+  .reveal-frame > .data-block {margin-bottom: 0}
+  .detail.open .detail-right .data-block[data-reveal-pending] {opacity:0}
+  body:has(.detail.open) {overscroll-behavior: none}
+  .detail {
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    grid-template-columns: minmax(0,1fr);
+    overflow-anchor: none;
+  }
+  .detail-left {overflow: clip; touch-action: pan-y pinch-zoom}
+  .detail-art {max-width: 100%}
+  .detail-image {touch-action: pan-y pinch-zoom}
+  .detail-body {max-width: 100%; overflow-wrap: anywhere}
+  .detail-right {overflow: clip}
+  .detail.has-purchase .detail-body {padding-bottom: 32px}
+  .detail .detail-body:has(.reveal-frame) {padding-bottom: 0}
+  .detail-right:has(.reveal-frame) {padding-bottom: 0}
+  .detail-right .reveal-frame:not(:has(~ .reveal-frame)) {margin-bottom: 12px}
+  .measure-note {display: none}
+  .purchase-dock .purchase-block {
+    position: static;
+    background: transparent;
+    backdrop-filter: none;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .table-scroll {max-width: 100%; overscroll-behavior-x: contain}
+  .info-pairs {grid-template-columns: minmax(0,1fr)}
+  .purchase button {min-width: 0; overflow-wrap: anywhere}
+}
+@media (prefers-reduced-motion: reduce) {
+  .detail.open .detail-right .data-block:not(.purchase-block) {opacity: 1; transform: none}
+  .slot .hook, .slot .hook::after, .slot .hanger, .slot.active .hanger {transition: none}
+  .slot {transform: translateX(calc(var(--offset)*var(--pitch) + var(--shift,0px)))!important}
+}
+.wordmark{max-width:min(50vw,24rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.support-entry{border:0;background:none;color:var(--ink);font-size:12px;padding:8px 3px;white-space:nowrap}
+.detail-support{position:fixed;top:22px;left:3vw;z-index:8;padding:12px 15px;border-radius:24px;background:#ffffffa0}
+.checkout-link{flex:1;border-radius:35px;background:#1c1c1a;color:white;font-size:19px;padding:19px;text-align:center;text-decoration:none}
+.support-dialog{color:#171715;width:min(460px,calc(100vw - 34px));max-height:88svh;border:1px solid #e1e0dc;border-radius:16px;padding:22px;background:white;box-shadow:0 16px 65px #0002}
+.support-dialog h2{margin:0 0 12px;font-size:21px}
+.support-dialog .support-intro,.support-dialog .support-status{color:#666;font-size:12px}
+.support-dialog .support-log{min-height:100px;max-height:min(40svh,340px);overflow:auto;margin:15px 0;overscroll-behavior:contain}
+.support-dialog .support-message{border-radius:12px;background:#f0efed;padding:9px 12px;margin:0 18% 8px 0}
+.support-dialog .support-message.visitor{background:#f1f2ea;margin:0 0 8px 18%}
+.support-dialog .support-message p{white-space:pre-wrap;overflow-wrap:anywhere;color:#242422;margin:3px 0 0}
+.support-dialog .support-form{display:flex;align-items:flex-end;gap:8px}
+.support-dialog textarea{flex:1;min-width:0;font:inherit;font-size:16px;min-height:56px;max-height:145px;border:1px solid #c8c7c2;border-radius:9px;padding:9px;resize:vertical}
+.support-dialog .support-form button,.support-dialog .support-new{border-radius:8px;padding:10px 13px;background:#222;color:white}
+.support-dialog [hidden]{display:none!important}
+.support-dialog .support-close{padding:6px;margin-left:8px}
+@media(max-width:760px){
+  .detail-support{top:12px;left:9px}
+  .checkout-link{min-width:0;font-size:17px;padding:15px}
+}
+
+.detail .arrow {display:none}
+.detail-art {isolation:isolate;overflow:visible;touch-action:pan-y pinch-zoom}
+.detail-orbit {position:absolute;inset:0;pointer-events:none}
+.orbit-item {position:absolute;inset:0 auto 0 50%;width:66%;margin-left:-33%;pointer-events:none;transform-origin:center}
+.orbit-item .detail-image,.orbit-photo {position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none}
+.orbit-item[data-center] {z-index:2}
+.orbit-hit {position:absolute;inset:0;width:100%;height:100%;border:0;background:none;padding:0;pointer-events:auto;border-radius:8px}
+.orbit-hit[hidden] {display:none}
+.orbit-hit:focus-visible {outline:1px solid #6a6860;outline-offset:-9px}
+.detail-art .photo-message,.detail-art .retry-photo {z-index:2002}
+.detail-art .orbit-hint {position:absolute;z-index:2001;left:50%;bottom:2px;transform:translateX(-50%);padding:4px 8px;white-space:nowrap;font-size:12px;color:#57554d;background:#fffffff2;border-radius:12px;pointer-events:none}
+.orbit-hint[hidden] {display:none}
+.data-block.size-data tbody tr {transition:background-color .2s ease}
+.data-block.size-data tbody tr[data-selected-size] {background:#eae6dc}
+.purchase-price {display:grid;gap:3px;min-width:max-content}
+.purchase-selected-size {font-size:12px;color:#595750;line-height:1.3;font-weight:500}
+.orbit-touch-hint {display:none}
+@media(min-width:761px) {
+  .detail-body {gap:8vw}
+  .detail-body.no-data {grid-template-columns:minmax(0,min(540px,68vw))}
+}
+@media(max-width:760px) {
+  .detail-body {padding-inline:0}
+  .detail-left,.detail-right {padding-inline:22px}
+  .detail-left {overflow-x:clip;overflow-y:visible}
+  .detail-art {width:min(22rem,max(18rem,52svh),100vw);max-width:none}
+  .orbit-item {width:72%;margin-left:-36%}
+  .detail.open .orbit-touch-hint {display:block;font-size:12px;color:#65635d;margin:6px 0 0}
+  .detail .detail-footer {display:none}
+}
+@media(prefers-reduced-motion:reduce) {.data-block.size-data tbody tr {transition:none}}
+
+.hint {position:relative}
+.rack-position {
+  position:absolute;
+  bottom:calc(100% + 5px);
+  left:50%;
+  width:min(160px,42vw);
+  height:24px;
+  transform:translateX(-50%);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 320ms ease;
+}
+.rack-position.visible,.rack-position:focus-within {opacity:1;pointer-events:auto}
+.home.focused .rack-position {visibility:hidden}
+.rack-position input {position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;touch-action:none}
+.rack-position:focus-within {outline:1px solid #8c8980;outline-offset:2px}
+.rack-position-track {position:absolute;top:50%;inset-inline:0;height:2px;transform:translateY(-50%);background:#ddd9d1;border-radius:4px;pointer-events:none}
+.rack-position-track span {display:block;height:100%;background:#8c8980;border-radius:inherit}
+.rack-position.dragging .rack-position-track {height:5px}
+.rack-scroll.rack-position-drag {scroll-snap-type:none}
+.detail.rack-transfer-open .detail-body {animation:none}
+.detail.rack-transfer-open #detailImage {visibility:hidden}
+.detail.returning-to-rack {visibility:visible;transition:none;pointer-events:none}
+.detail.returning-photo-outside-detail #detailImage {visibility:hidden}
+.home.returning-rack-clearing .rack-scroll {transition:filter 285ms ease-out,opacity 250ms ease-out}
+.slot.retained-angle .view {visibility:hidden}
+.rack-retained-photo {position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none}
+.returning-rack-aligning .slot,.returning-rack-aligning .slot .views {transition:none}
+.slot.retained-angle[data-return-angle="side"] {--hanger-x:var(--side-hanger-x,0);--hanger-width:var(--side-hanger-width,.06)}
+@media(prefers-reduced-motion:reduce) {.rack-position {transition:none}}
+</style></head><body>
+<main class="home" id="home"><header><button class="plain about" id="about">ABOUT</button><div class="wordmark">STUDIO NINE</div><div class="tools"><button class="icon" aria-label="搜索" data-note="本系列共 12 件作品，均已陈列在衣架上"><svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><button class="icon account" aria-label="账户" data-note="系列预览，无需登录"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3c0-7 16-7 16 0v3"/></svg></button><button class="icon" aria-label="购物袋" data-note="系列预览，暂未开放购买"><svg viewBox="0 0 24 24"><path d="M4 8h16l1 14H3L4 8Z M8 10V5a4 4 0 0 1 8 0v5"/></svg></button></div></header><section class="rack-scroll" id="rackScroll" aria-label="衣架系列，可横向滑动"><div class="rack" id="rack"><div class="rail" aria-hidden="true"></div><span class="loading" id="loading">PREPARING THE RACK</span></div></section><p class="hint"><button class="rack-nav" id="rackPrev" aria-label="向前浏览衣架">←</button><span class="hint-desktop">Hover to explore · Click to discover · Scroll to browse</span><span class="hint-mobile">轻触转正 · 再触查看 · 左右滑动</span><button class="rack-nav" id="rackNext" aria-label="向后浏览衣架">→</button></p><div class="collection">COLLECTION 01 / TWELVE PIECES</div><div class="number">A STUDY IN EVERYDAY FORMS · <a href="/admin/" style="color:inherit;text-decoration:none">管理衣架</a></div></main>
+<section class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="title" aria-hidden="true" inert><button class="close" id="close">CLOSE <b>×</b></button><button class="arrow prev" id="prev" aria-label="上一件">←</button><div class="detail-scroll"><div class="detail-body"><div class="detail-left"><div class="detail-art" id="detailArt"><img class="detail-image" id="detailImage" decoding="async" fetchpriority="high" alt=""><span class="photo-message" id="detailPhotoMessage" role="status" hidden></span><button class="retry-photo" id="retryDetailPhoto" hidden>重新加载</button></div><h1 id="title"></h1><p class="sub" id="subtitle"></p><div class="segmented" aria-label="选择服装视角"><button data-view="front" aria-pressed="true">FRONT</button><button data-view="side" aria-pressed="false">SIDE</button><button data-view="back" aria-pressed="false">BACK</button></div><p class="description" id="description"></p><div class="detail-count" id="count"></div><div class="detail-footer">← → 切换款式 · F / S / B 切换视角 · ESC 返回衣架</div></div><div class="detail-right"></div></div></div><div class="purchase-dock" hidden></div><button class="arrow next" id="next" aria-label="下一件">→</button><span class="sr-only" id="announcement" aria-live="polite"></span></section>
+<dialog id="aboutDialog"><button id="closeAbout" aria-label="关闭品牌介绍">×</button><h2>STUDIO NINE</h2><p>COLLECTION 01<br>十二件衣服，三十六个角度。<br>从侧面轮廓，到正面细节，再到背面的线条。慢慢看，找到你喜欢的那一件。</p></dialog><div class="toast" id="toast" role="status"></div>
+<script>
+let items=[];
+const rack=document.querySelector('#rack'),home=document.querySelector('#home'),detail=document.querySelector('#detail');let active=-1,current=0,view='front',lastFocus=null,opened=false,ready=false,closeTimer,touchX=0,touchY=0;
+rack.style.setProperty('--count',items.length);
+const rackScroll=document.querySelector('#rackScroll');
+const rackPrev=document.querySelector('#rackPrev'),rackNext=document.querySelector('#rackNext');
+function updateRackNavigation(){rackPrev.disabled=rackScroll.scrollLeft<2;rackNext.disabled=rackScroll.scrollLeft>=rackScroll.scrollWidth-rackScroll.clientWidth-2}
+function scrollRack(direction){activate(-1);rackScroll.scrollBy({left:direction*Math.max(260,rackScroll.clientWidth*.55),behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'})}
+rackPrev.onclick=()=>scrollRack(-1);rackNext.onclick=()=>scrollRack(1);
+rackScroll.addEventListener('scroll',updateRackNavigation,{passive:true});
+new ResizeObserver(updateRackNavigation).observe(rackScroll);
+rackScroll.addEventListener('wheel',event=>{if(Math.abs(event.deltaY)<=Math.abs(event.deltaX))return;const canScroll=event.deltaY>0?rackScroll.scrollLeft<rackScroll.scrollWidth-rackScroll.clientWidth-1:rackScroll.scrollLeft>1;if(canScroll){event.preventDefault();activate(-1);rackScroll.scrollLeft+=event.deltaY*(event.deltaMode===1?16:1)}},{passive:false});
+function pieceHash(i){return '#piece-'+encodeURIComponent(items[i].id)}
+function hashIndex(){
+  if(!location.hash.startsWith('#piece-'))return -1;
+  try{
+    const key=decodeURIComponent(location.hash.slice(7));
+    const exact=items.findIndex(item=>item.id===key);if(exact>=0)return exact;
+    if(/^\d+$/.test(key)){const index=Number(key)-1;return index>=0&&index<items.length?index:-1}
+    return -1;
+  }catch{return -1}
+}
+// The supplied photographs are compressed and loaded independently; a failed image never blocks the rack.
+function photoState(image){
+  const slot=image.closest('.slot');
+  if(slot){refreshPiecePhoto(slot);return}
+  if(image.id==='detailImage')refreshDetailPhoto();
+}
+const photoDeadlines=new WeakMap();
+function showPhoto(image,source,retry=false){
+  if(!retry&&image.dataset.photo===source){
+    if(image.id!=='detailImage'||image.dataset.state!=='error')return;
+    retry=true;
+  }
+  clearTimeout(photoDeadlines.get(image));
+  image.dataset.photo=source;image.dataset.state='loading';
+  const finish=state=>{clearTimeout(photoDeadlines.get(image));image.dataset.state=state;photoState(image)};
+  image.onload=()=>finish('ready');
+  image.onerror=()=>finish('error');
+  image.src=source+(retry&&!source.startsWith('data:')?(source.includes('?')?'&':'?')+'retry='+Date.now():'');
+  if(image.id==='detailImage')photoDeadlines.set(image,setTimeout(()=>{if(image.dataset.state==='loading')finish('error')},14000));
+  photoState(image);
+}
+function refreshPiecePhoto(slot){
+  const image=slot.querySelector(slot.classList.contains('active')?'.front':'.side');
+  const state=image.dataset.state||'loading';
+  const message=slot.querySelector('.photo-message');
+  message.hidden=state==='ready';message.textContent=state==='error'?'图片未加载':'图片加载中…';
+  slot.querySelector('.retry-photo').hidden=state!=='error';
+}
+function refreshDetailPhoto(){
+  const image=document.querySelector('#detailImage'),state=image.dataset.state||'loading';
+  const message=document.querySelector('#detailPhotoMessage');
+  message.hidden=state==='ready';message.textContent=state==='error'?'这张图片未能加载，请点击重试。':'图片加载中…';
+  document.querySelector('#retryDetailPhoto').hidden=state!=='error';
+}
+function esc(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+let studioSettings={brand:'STUDIO NINE',collection:'COLLECTION 01',about:''};
+let studioRoomName='';
+function applyStudioSettings(){
+  const wordmark=document.querySelector('.wordmark');wordmark.textContent=studioSettings.brand;wordmark.title=studioSettings.brand;
+  if(!ready)return;
+  document.querySelector('.collection').textContent=(showroomPath?studioRoomName:studioSettings.collection)+' / '+String(items.length).padStart(2,'0')+' PIECES';
+  document.title=showroomPath?studioRoomName+' · '+studioSettings.brand:studioSettings.brand+' · The Rack';
+  document.querySelector('#aboutDialog p').textContent=studioSettings.about||items.length+' 件衣服，'+items.length*3+' 个角度。从侧面轮廓，到正面细节，再到背面的线条。';
+}
+const showroomPath = "showroom-1";
+const originalShowroom = "https://studio-nine-showroom-rack.plaidbutton8.chatgpt.site/room-1837547b-5674-4329-9b7c-4bd9c3f6f265";
+const managerLink = document.querySelector(".number a");
+managerLink.href = "https://studio-nine-showroom-rack.plaidbutton8.chatgpt.site/admin/?room=room-1837547b-5674-4329-9b7c-4bd9c3f6f265";
+function prepare() {
+  const basePath = location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "");
+  const roomSuffix = "/" + showroomPath;
+  const root = basePath.endsWith(roomSuffix) ? basePath.slice(0, -roomSuffix.length) : basePath;
+  const base = new URL(root + "/", location.origin);
+  items = [{"id":"949ac23f-2074-4925-aa45-4e3997dc957a","zh":"破校服","name":"破校服","color":"BURGUNDY / LIGHT GRAY","description":"酒红与浅灰色横向拼接，搭配立领、全长拉链和收口袖口。胸前圆形徽章与前侧口袋丰富了运动轮廓。","kind":"top","assets":{"front":"showroom-1/images/5287643b021e77e58c1db1bb.webp","side":"showroom-1/images/26d949480697df725cb79961.webp","back":"showroom-1/images/a4f50563946014c78e70a46b.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"PRODUCT INFO","unit":"","columns":["项目","内容"],"rows":[["颜色","酒红色 / 浅灰色"],["领型","立领"],["衣门襟","全长拉链"],["口袋样式","前侧插袋"],["细节","胸前徽章"]]},"sizeChart":{"enabled":true,"title":"SIZE","unit":"","columns":["尺码","胸围","肩宽","袖长","衣长"],"rows":[["L","10","40","100","66"],["XL","22","45","110","68"],["2XL","21","44","150","70"],["100XL","1000000000","66666666666","1888888888888","12345678910"]]},"options":[],"optionsEnabled":true,"price":988,"currency":"CNY","priceEnabled":true,"buttonLabel":"预售"}},{"id":"08c3ef9a-cbe3-4842-a2fd-b5c43618b9b4","zh":"三中二手school uniform","name":"RUBBISH","color":"Blue","description":"1成新，后面破两洞，诚心出","kind":"top","assets":{"front":"showroom-1/images/530c5e5f7044e58bf5c88ba6.webp","side":"showroom-1/images/44098c2805242bf43f058aca.webp","back":"showroom-1/images/5e2f6be6e723dbbc74039477.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"PRODUCT INFO","unit":"","columns":["项目","内容"],"rows":[["颜色","亮蓝色/深蓝色"],["领型","Polo 翻领"],["袖型","短袖"],["细节","条纹袖片"]]},"sizeChart":{"enabled":true,"title":"SIZE","unit":"","columns":["尺码","胸围","肩宽","袖长","衣长"],"rows":[["L","10","40","100","66"],["XL","22","45","110","68"],["2XL","21","44","150","70"],["100XL","1000000000","66666666666","1888888888888","12345678910"]]},"options":["L","XL","2XL","100XL"],"optionsEnabled":true,"price":988,"currency":"CNY","priceEnabled":true,"buttonLabel":"预售"}},{"id":"5c65d211-4e65-48f8-9aad-62badd1e635e","zh":"浅米舒芙蕾圆领针织衫","name":"浅米舒芙蕾圆领针织衫","color":"30 浅米色","description":"圆领长袖，领口、袖口和下摆采用罗纹收边。优衣库参考货号 486080。","kind":"top","assets":{"front":"showroom-1/images/5205c12aad06ec5d3b4f6fb7.webp","side":"showroom-1/images/77b1ec882804c480ddc618bc.webp","back":"showroom-1/images/de481714226f4789ac3ed93f.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["品牌","优衣库（UNIQLO）"],["颜色","30 浅米色"],["领型","圆领"],["袖长","长袖"],["面料","腈纶 57%、再生聚酯纤维 32%、绵羊毛 8%、氨纶 3%"],["参考货号","486080"],["类别","针织衫"],["版型","常规型"],["收边","袖口与下摆罗纹"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 优衣库葡萄牙站","unit":"cm","columns":["尺码","后衣长","肩宽","身宽（½胸围）","连肩袖长"],"rows":[["XS","61","42","49","81.5"],["S","64","43.5","52","84"],["M","67","45","55","86.5"],["L","70","47","59","89"],["XL","73","49","63","91"],["XXL","74","51","67","92"],["3XL","75","53","71","93"]]},"options":[],"optionsEnabled":true,"price":199,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"3e7d4c7a-c5c6-4a1f-b9f4-c25d169a498b","zh":"深灰打褶宽松长裤","name":"深灰打褶宽松长裤","color":"08 深灰色","description":"前腰单褶，裤腿留有余量，裤脚微收。优衣库参考货号 487220。面料：聚酯纤维 67%、粘纤 29%、氨纶 4%。","kind":"trousers","assets":{"front":"showroom-1/images/f1b08f2cd950841cfcbbca00.webp","side":"showroom-1/images/feeaf807905e406dfae63d6b.webp","back":"showroom-1/images/dd5692b8f128a294e0b0a16c.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","08 深灰色"],["参考货号","优衣库 487220"],["面料","聚酯纤维 67%、粘纤 29%、氨纶 4%"],["类别","休闲长裤"],["版型","宽松、裤脚微收"],["前腰","单褶"],["裤长","长裤"],["裤腿","自然垂坠"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 优衣库马来西亚站","unit":"cm","columns":["尺码","腰围","臀围","大腿宽","前裆长","裤脚宽","内侧裤长"],"rows":[["XS","72","103.5","33.5","29.5","20.5","69"],["S","78","109.5","35.5","30","21","71"],["M","84","115.5","37.5","31","22","73"],["L","90","121.5","39.5","32","23","75"],["XL","98","128","41.5","32.5","23.5","75"],["XXL","106","132.5","43","33.5","24","75"],["3XL","112","137.5","44.5","34.5","24.5","75"]]},"options":[],"optionsEnabled":true,"price":149,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"de099082-2b41-436f-b3f7-75d42b322e45","zh":"宝蓝 BAGGY 宽松牛仔裤","name":"宝蓝 BAGGY 宽松牛仔裤","color":"65 宝蓝色","description":"水洗蓝宽松直筒，保留经典五袋结构和牛仔明线。优衣库参考货号 482868。裤身 100% 棉，口袋布为聚酯纤维 65%、棉 35%。","kind":"trousers","assets":{"front":"showroom-1/images/e323c51e71bbc95e6ea1ce53.webp","side":"showroom-1/images/7ba0a1d7d912de7a11c85228.webp","back":"showroom-1/images/df1ab98f8002fe498e3ad1fa.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","65 宝蓝色"],["参考货号","优衣库 482868"],["面料","裤身 100% 棉；口袋布为聚酯纤维 65%、棉 35%"],["类别","牛仔裤"],["版型","宽松直筒"],["裤长","常规长裤"],["口袋","经典五袋"],["外观","水洗蓝、牛仔明线"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 优衣库菲律宾站","unit":"cm","columns":["尺码（英寸）","腰围","臀围","大腿宽","前裆长","裤脚宽","内侧裤长"],"rows":[["28","76.8","104.1","34.3","28.6","22.2","74.9"],["29","79.4","106.7","34.9","29.2","22.2","76.2"],["30","81.9","109.2","35.6","29.2","22.2","76.2"],["31","84.5","111.8","36.2","29.2","22.9","76.8"],["32","87.0","114.3","36.8","29.8","23.5","76.8"],["33","89.5","116.2","37.5","29.8","24.1","78.1"],["34","92.1","118.7","38.7","30.5","24.1","78.1"],["35","94.6","121.3","38.7","30.5","24.8","78.1"],["36","97.2","123.8","39.4","31.1","24.8","78.1"]]},"options":[],"optionsEnabled":true,"price":249,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"a7d964fe-0434-450f-897b-2901e5115562","zh":"藏青哈灵顿夹克","name":"藏青哈灵顿夹克","color":"69 藏青色","description":"短款立领，前襟隐藏拉链，袖口和下摆做罗纹收口。优衣库参考货号 487318／484610。外层为棉 50%、聚酯纤维 50%，身片里布为棉 100%。","kind":"top","assets":{"front":"showroom-1/images/8f875a1c720be6b77cc9d385.webp","side":"showroom-1/images/b69d0fc7b16d8f96ee835206.webp","back":"showroom-1/images/1bebdf7df6d756eecf81d5b1.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","69 藏青色"],["参考货号","优衣库 487318／484610"],["面料","外层为棉 50%、聚酯纤维 50%；身片里布为棉 100%"],["类别","短夹克"],["版型","短款、宽松"],["领型","立领"],["门襟","隐藏式拉链"],["收口","罗纹袖口与下摆"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 优衣库芬兰站","unit":"cm","columns":["尺码","衣长","身宽（½胸围）","连肩袖长"],"rows":[["XS","61","58","86.5"],["S","63","61","89"],["M","65","64","91.5"],["L","68","68","94"],["XL","69","72","95"],["XXL","70","75","96"],["3XL","71","79","97"]]},"options":[],"optionsEnabled":true,"price":449,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"f1f779e3-2a38-448b-a849-d0a7852db71e","zh":"炭灰拉链连帽卫衣","name":"炭灰拉链连帽卫衣","color":"炭灰色","description":"炭灰色连帽卫衣，全开同色拉链，正面双插袋，袖口和下摆做罗纹收边。","kind":"top","assets":{"front":"showroom-1/images/e619c96aebf3ddcb736aeaad.webp","side":"showroom-1/images/3810c9efeb0502fda7866cb3.webp","back":"showroom-1/images/3535e1e11daa2dafce4c1c65.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","炭灰色"],["版型","宽松直身"],["尺码","XS–3XL（参考）"],["类别","连帽卫衣"],["帽型","连帽"],["门襟","同色全开拉链"],["口袋","正面双插袋"],["收口","罗纹袖口与下摆"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 参考（非实测）","unit":"cm","columns":["尺码","衣长","身宽（½胸围）","连肩袖长"],"rows":[["XS","63","57","85.5"],["S","65","60","88"],["M","67","63","90.5"],["L","70","67","93"],["XL","71","71","94"],["XXL","72","74","95"],["3XL","73","78","96"]]},"options":[],"optionsEnabled":true,"price":379,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"fbbf646c-0667-47c2-bf60-b3021fb1c6eb","zh":"深靛蓝牛仔夹克","name":"深靛蓝牛仔夹克","color":"深靛蓝","description":"深靛蓝翻领夹克，正面双翻盖胸袋，低对比明线和金属纽扣。","kind":"top","assets":{"front":"showroom-1/images/6a41aabe2cd23531f640a9b2.webp","side":"showroom-1/images/fafb113817decf9a84938f52.webp","back":"showroom-1/images/79dfcbccb03d77fcef2a8d96.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","深靛蓝"],["版型","短身直落"],["尺码","XS–3XL（参考）"],["类别","牛仔夹克"],["领型","翻领"],["门襟","金属纽扣"],["口袋","双翻盖胸袋"],["走线","低对比明线"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 参考（非实测）","unit":"cm","columns":["尺码","衣长","身宽（½胸围）","连肩袖长"],"rows":[["XS","61","56","84.5"],["S","63","59","87"],["M","65","62","89.5"],["L","68","66","92"],["XL","69","70","93"],["XXL","70","73","94"],["3XL","71","77","95"]]},"options":[],"optionsEnabled":true,"price":198,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"33e9523a-a1a6-4915-8b5e-cc27b65c9bba","zh":"烟棕短款麂皮感夹克","name":"烟棕短款麂皮感夹克","color":"烟棕色","description":"烟棕色翻领夹克，表面呈哑光麂皮质感。短衣身、落肩宽袖，搭配隐藏拉链和低调插袋。","kind":"top","assets":{"front":"showroom-1/images/f569ee3c1a0dfa295d26e1ba.webp","side":"showroom-1/images/a2aa6710d89aeae6894230ce.webp","back":"showroom-1/images/508c0c9258d6d46bd1a1a6ce.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","烟棕色"],["版型","短款、落肩"],["尺码","XS–3XL（参考）"],["类别","短夹克"],["领型","翻领"],["门襟","隐藏式拉链"],["口袋","双侧插袋"],["表面","哑光麂皮质感"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 参考（非实测）","unit":"cm","columns":["尺码","衣长","身宽（½胸围）","连肩袖长"],"rows":[["XS","60","58","86"],["S","62","61","88.5"],["M","64","64","91"],["L","67","68","93.5"],["XL","68","72","94.5"],["XXL","69","75","95.5"],["3XL","70","79","96.5"]]},"options":[],"optionsEnabled":true,"price":298,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"cc044279-e8bf-43a9-88e5-d1265336a8fa","zh":"雾蓝连帽机能外套","name":"雾蓝连帽机能外套","color":"雾蓝灰","description":"雾蓝灰连帽短外套，宽松肩袖，搭配同色拉链和斜插袋，后背保留同色肩部走线。","kind":"top","assets":{"front":"showroom-1/images/36eb60a421cc1ee688d9957a.webp","side":"showroom-1/images/94e84f69c11dc2647559f57c.webp","back":"showroom-1/images/5d32e318f0f15a0dca0db684.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","雾蓝灰"],["版型","短款、宽松肩袖"],["尺码","XS–3XL（参考）"],["类别","连帽夹克"],["领型","连帽高领"],["门襟","同色拉链"],["口袋","双侧斜插袋"],["袖口","松紧收口"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 参考（非实测）","unit":"cm","columns":["尺码","衣长","身宽（½胸围）","连肩袖长"],"rows":[["XS","61","59","86.5"],["S","63","62","89"],["M","65","65","91.5"],["L","68","69","94"],["XL","69","73","95"],["XXL","70","76","96"],["3XL","71","80","97"]]},"options":[],"optionsEnabled":true,"price":199,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}},{"id":"a333c3af-b7f7-44a6-8f76-fbad0b57fe0a","zh":"墨黑短款飞行夹克","name":"墨黑短款飞行夹克","color":"墨黑色","description":"墨黑短款飞行夹克，低罗纹领、宽松弧形袖，前襟双向拉链，两侧斜插袋。","kind":"top","assets":{"front":"showroom-1/images/40ac089603573aab6ae03a15.webp","side":"showroom-1/images/13be5e9b81ecdbfca3e69c5b.webp","back":"showroom-1/images/33140828c64312c83485065f.webp"},"published":true,"trashedAt":null,"details":{"info":{"enabled":true,"title":"商品详情","unit":"","columns":["项目","内容"],"rows":[["颜色","墨黑色"],["版型","短衣身、落肩"],["尺码","XS–3XL（参考）"],["类别","飞行夹克"],["领型","低罗纹领"],["门襟","双向拉链"],["口袋","双侧斜插袋"],["收口","罗纹袖口与下摆"]]},"sizeChart":{"enabled":true,"title":"成衣尺寸 · 参考（非实测）","unit":"cm","columns":["尺码","衣长","身宽（½胸围）","连肩袖长"],"rows":[["XS","59","59","87"],["S","61","62","89.5"],["M","63","65","92"],["L","66","69","94.5"],["XL","67","73","95.5"],["XXL","68","76","96.5"],["3XL","69","80","97.5"]]},"options":[],"optionsEnabled":true,"price":299,"currency":"CNY","priceEnabled":true,"buttonLabel":"购买咨询"}}];
+  studioSettings = {"brand":"STUDIO","collection":"COLLECTION 01","about":""};
+  studioRoomName = "展厅 1";
+  for (const item of items) {
+    for (const angle of ["front", "side", "back"]) {
+      item.assets[angle] = new URL(item.assets[angle], base).href;
+    }
+  }
+  rack.style.setProperty("--count", items.length);
+  items.forEach(addPiece);
+  document.querySelector("#loading")?.remove();
+  document.querySelector('[aria-label="搜索"]').dataset.note = "本系列共 " + items.length + " 件作品，可滑动或使用箭头浏览";
+  ready = true;
+  applyStudioSettings();
+  updateRackNavigation();
+  const index = hashIndex();
+  if (index >= 0) openDetail(index, false);
+}
+function addPiece(item,i){let slot=document.createElement('div');slot.className='slot';slot.classList.toggle('trousers',item.kind==='trousers');slot.style.setProperty('--offset',i-(items.length-1)/2);slot.dataset.index=i;slot.dataset.id=item.id;let button=document.createElement('button');button.className='piece';button.setAttribute('aria-label',item.zh+'，预览或展开详情');button.innerHTML=`<span class="hook" aria-hidden="true"></span><span class="hanger" aria-hidden="true"></span><span class="views"><img class="view side" decoding="async" loading="${i<2?'eager':'lazy'}" fetchpriority="${i<2?'high':'auto'}" alt="${esc(item.zh)}侧面"><img class="view front" decoding="async" loading="lazy" alt="${esc(item.zh)}正面"></span><span class="caption">${esc(item.name)} — ${esc(item.color)}</span>`;slot.append(button);rack.append(slot);
+let status=document.createElement('span');status.className='photo-message';status.setAttribute('role','status');status.textContent='图片加载中…';slot.append(status);
+let retry=document.createElement('button');retry.className='retry-photo';retry.textContent='重新加载';retry.setAttribute('aria-label','重新加载'+item.zh);retry.hidden=true;slot.append(retry);
+retry.onclick=()=>{let image=slot.querySelector(slot.classList.contains('active')?'.front':'.side');showPhoto(image,image.dataset.photo,true)};
+alignRackHangers(slot);showPhoto(slot.querySelector('.side'),item.assets.side);showPhoto(slot.querySelector('.front'),item.assets.front);button.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')activate(i)});button.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch'&&!opened)activate(-1)});button.addEventListener('focus',()=>{if(!opened)activate(i)});button.addEventListener('blur',()=>{if(!opened)activate(-1)});button.addEventListener('pointerdown',e=>{button.dataset.touch=e.pointerType==='touch'?'1':'0';button.dataset.wasActive=active===i?'1':'0'});button.addEventListener('click',()=>{if(button.dataset.touch==='1'&&button.dataset.wasActive!=='1'){activate(i);return}openDetail(i)})}
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('.piece'))e.target.dataset.touch='0'});
+function activate(i){active=i;document.querySelectorAll('.slot').forEach((slot,j)=>{slot.classList.toggle('active',i===j);let d=j-i,shift=i<0||!d?0:Math.sign(d)*72*Math.pow(.55,Math.abs(d)-1);slot.style.setProperty('--shift',shift+'px');refreshPiecePhoto(slot)})}
+function setView(side){view=side;let image=document.querySelector('#detailImage');showPhoto(image,items[current].assets[side]);image.alt=items[current].zh+' · '+({front:'正面',side:'侧面',back:'背面'}[side]);document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===side));document.querySelector('#announcement').textContent=image.alt}
+function render(angle='front'){let item=items[current];document.querySelector('#detailArt').classList.toggle('trousers',item.kind==='trousers');document.querySelector('#title').textContent=item.name;document.querySelector('#subtitle').textContent=item.zh+' / '+item.color;document.querySelector('#description').textContent=item.description;document.querySelector('#count').textContent=`${String(current+1).padStart(2,'0')} / ${String(items.length).padStart(2,'0')}`;setView(angle)}
+function openDetail(i,push=true){if(!ready)return;clearTimeout(closeTimer);current=i;let wasOpen=opened;if(!wasOpen)lastFocus=document.activeElement;opened=true;activate(i);render();detail.inert=false;detail.classList.add('open');detail.setAttribute('aria-hidden','false');home.classList.add('focused');home.inert=true;document.body.style.overflow='hidden';if(!wasOpen)document.querySelector('#close').focus();if(push){if(wasOpen)history.replaceState(null,'',pieceHash(i));else history.pushState(null,'',pieceHash(i))}}
+function closeDetail(fromHistory=false){opened=false;detail.classList.remove('open');home.classList.remove('focused');home.inert=false;detail.inert=true;detail.setAttribute('aria-hidden','true');document.body.style.overflow='';activate(-1);if(!fromHistory&&location.hash)history.replaceState(null,'',location.pathname+location.search);(lastFocus?.isConnected?lastFocus:document.querySelector('.piece')||document.querySelector('#about')).focus();activate(-1)}
+function move(d){current=(current+d+items.length)%items.length;activate(current);render();history.replaceState(null,'',pieceHash(current))}
+document.querySelector('#close').onclick=()=>closeDetail();document.querySelector('#prev').onclick=()=>move(-1);document.querySelector('#next').onclick=()=>move(1);document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));document.addEventListener('keydown',e=>{if(!opened)return;if(e.key==='Escape')closeDetail();if(e.key==='ArrowLeft'){e.preventDefault();move(-1)}if(e.key==='ArrowRight'){e.preventDefault();move(1)}let v={f:'front',s:'side',b:'back'}[e.key.toLowerCase()];if(v)setView(v);if(e.key==='Tab'){let bs=[...detail.querySelectorAll('button:not(:disabled),a[href]')].filter(control=>!control.closest('.switch-ghost')&&(!control.closest('dialog')||control.closest('dialog').open)&&control.getClientRects().length),a=bs[0],z=bs.at(-1);if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}});window.addEventListener('popstate',()=>{let index=hashIndex();if(index>=0&&ready)openDetail(index,false);else if(opened)closeDetail(true)});let art=document.querySelector('#detailArt');let aboutDialog=document.querySelector('#aboutDialog');document.querySelector('#about').onclick=()=>aboutDialog.showModal();document.querySelector('#closeAbout').onclick=()=>aboutDialog.close();let toastTimer;document.querySelectorAll('[data-note]').forEach(b=>b.onclick=()=>{let t=document.querySelector('#toast');t.textContent=b.dataset.note;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2300)});document.querySelector('#retryDetailPhoto').onclick=()=>{const image=document.querySelector('#detailImage');showPhoto(image,image.dataset.photo,true)};var studioSizing = (() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, { get: all[name], enumerable: true });
+  };
+  var __copyProps = (to, from, except, desc) => {
+    if (from && typeof from === "object" || typeof from === "function") {
+      for (let key of __getOwnPropNames(from))
+        if (!__hasOwnProp.call(to, key) && key !== except)
+          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+    }
+    return to;
+  };
+  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var stdin_exports = {};
+  __export(stdin_exports, {
+    detailSizes: () => detailSizes,
+    sizeColumn: () => sizeColumn,
+    sizeKey: () => sizeKey
+  });
+  const sizeKey = (value) => String(value ?? "").normalize("NFKC").trim().toUpperCase();
+  function sizeColumn(chart) {
+    return chart?.columns?.findIndex((label) => /^(尺码|尺寸|size|号型)(?:\s|[(:]|$)/i.test(sizeKey(label))) ?? -1;
+  }
+  function detailSizes(details) {
+    if (details.optionsEnabled === false) return [];
+    if (details.options?.length) return details.options;
+    const chart = details.sizeChart;
+    const column = sizeColumn(chart);
+    if (column < 0 || chart.enabled === false) return [];
+    const sizes = /* @__PURE__ */ new Map();
+    for (const row of chart.rows ?? []) {
+      const label = row[column]?.trim();
+      const key = sizeKey(label);
+      if (key && !sizes.has(key)) sizes.set(key, label);
+    }
+    return [...sizes.values()].slice(0, 30);
+  }
+  return __toCommonJS(stdin_exports);
+})();
+
+function locateRackHanger(image, trousers) {
+  const canvas = document.createElement('canvas');
+  const scale = 144 / Math.max(image.naturalWidth, image.naturalHeight);
+  const width = canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+  const height = canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+  const ctx = canvas.getContext('2d', {willReadFrequently: true});
+  ctx.drawImage(image, 0, 0, width, height);
+  const {data} = ctx.getImageData(0, 0, width, height);
+  const span = y => {
+    let left = width, right = -1, count = 0;
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      if (data[i + 3] < 170 || Math.min(data[i], data[i + 1], data[i + 2]) > 248) continue;
+      left = Math.min(left, x);
+      right = x;
+      count++;
+    }
+    return {left, right, count};
+  };
+  let top = 0;
+  while (top < height * .4 && span(top).count < Math.max(3, width * .1)) top++;
+  if (top >= height * .4) return null;
+  const guide = span(Math.min(height - 1, top + Math.round(height * (trousers ? .035 : .075))));
+  if (guide.right < guide.left) return null;
+  // Values are relative to the CSS photo height; account for object-fit letterboxing.
+  const fit = Math.min(1 / height, 1.02 / width);
+  // A faint edge or raised collar may sit above the row used for centering.
+  let silhouetteTop = 0;
+  while (silhouetteTop < top && !span(silhouetteTop).count) silhouetteTop++;
+  return {
+    x: ((guide.left + guide.right + 1 - width) / 2) * fit,
+    y: (1 - height * fit) / 2 + silhouetteTop * fit,
+    width: (guide.right - guide.left + 1) * fit
+  };
+}
+
+function alignRackHangers(slot) {
+  for (const name of ['front', 'side']) {
+    const image = slot.querySelector('.view.' + name);
+    image.addEventListener('load', () => {
+      try {
+        const trousers = slot.classList.contains('trousers');
+        const anchor = locateRackHanger(image, trousers);
+        if (!anchor) return;
+        const prop = key => '--' + name + '-hanger-' + key;
+        slot.style.setProperty(prop('x'), String(anchor.x * (name === 'front' ? 1.12 : 1)));
+        slot.style.setProperty(prop('y'), String(anchor.y * (name === 'front' ? 1.12 : 1)));
+        slot.style.setProperty(prop('width'), String(anchor.width * (name === 'front' ? (trousers ? 1 : .9) : .46)));
+      } catch {
+        // Keep the default geometry if the browser cannot inspect an image.
+      }
+    });
+  }
+}
+
+const detailBody=detail.querySelector('.detail-body'),detailRight=detail.querySelector('.detail-right');
+const detailScroll=detail.querySelector('.detail-scroll'),purchaseDock=detail.querySelector('.purchase-dock');
+const motionOK=()=>!matchMedia('(prefers-reduced-motion:reduce)').matches;
+const mobileDetail=()=>matchMedia('(max-width:760px)').matches;
+let selectedSize='',detailAnimations=[],keepVisibleOnReveal=false;
+const mobileRevealDurationMs=550;
+const mobileRevealDistancePx=104;
+function element(tag,className,value){const node=document.createElement(tag);if(className)node.className=className;if(value!==undefined)node.textContent=value;return node}
+function tableBlock(data,kind){
+  if(!data||data.enabled===false||!data.columns?.length||!data.rows?.some(row=>row.some(value=>String(value).trim())))return null;
+  const section=element('section','data-block '+kind),title=element('h2','',data.title);if(data.unit)title.append(element('span','unit',data.unit));section.append(title);
+  if(kind==='info-data'&&data.columns.length===2&&data.rows.every(row=>row[0]?.trim()&&row[1]?.trim())){
+    const list=element('dl','info-pairs');
+    for(const [label,value] of data.rows){
+      const pair=element('div','info-pair');
+      pair.append(element('dt','',label),element('dd','',value));list.append(pair);
+    }
+    section.append(list);return section;
+  }
+  const wrap=element('div','table-scroll'),table=element('table'),head=element('thead'),hr=element('tr');data.columns.forEach(value=>{const th=element('th','',value);th.scope='col';hr.append(th)});head.append(hr);table.append(head);const body=element('tbody');data.rows.forEach(row=>{const tr=element('tr');data.columns.forEach((_,i)=>tr.append(element('td','',row[i]||'')));body.append(tr)});table.append(body);wrap.append(table);section.append(wrap);return section;
+}
+function syncSelectedRack(){rack.querySelectorAll('.slot').forEach((slot,index)=>{slot.classList.toggle('detail-selected',opened&&index===current)})}
+function movePill(wrap){
+  const chosen=wrap?.querySelector('[aria-pressed=true]'),slider=wrap?.querySelector('.size-slider');
+  if(!chosen||!slider||!chosen.offsetWidth)return;
+  slider.style.width=chosen.offsetWidth+'px';
+  slider.style.height=chosen.offsetHeight+'px';
+  slider.style.transform='translate('+chosen.offsetLeft+'px,'+chosen.offsetTop+'px)';
+  wrap.classList.add('slider-ready');
+}
+const viewControls=detail.querySelector('.segmented');
+const viewPill=element('span','size-slider view-slider');
+viewPill.setAttribute('aria-hidden','true');viewControls.prepend(viewPill);
+if(typeof ResizeObserver==='function'){
+  const viewSliderSizeObserver=new ResizeObserver(()=>movePill(viewControls));
+  viewSliderSizeObserver.observe(viewControls);
+}
+function moveSlider(){movePill(detailRight.querySelector('.size-options'));movePill(viewControls)}
+const basicSetView=setView;
+setView=function(side){basicSetView(side);movePill(viewControls)};
+function mountPurchase(section=detailRight.querySelector('.purchase-block')||purchaseDock.querySelector('.purchase-block')){
+  if(section){
+    const parent=mobileDetail()?purchaseDock:detailRight;
+    if(section.parentElement!==parent)parent.append(section);
+  }
+  purchaseDock.hidden=!purchaseDock.children.length;
+  detailBody.classList.toggle('no-data',!detailRight.children.length);
+}
+function appendDataBlock(block){
+  const frame=element('div','reveal-frame');
+  frame.append(block);
+  detailRight.append(frame);
+}
+function renderProductDetails(){
+  selectedSize='';detailRight.replaceChildren();purchaseDock.replaceChildren();const d=items[current].details||{};
+  const productInfo=tableBlock(d.info,'info-data'),sizeChart=tableBlock(d.sizeChart,'size-data');
+  if(productInfo)appendDataBlock(productInfo);
+  if(sizeChart)appendDataBlock(sizeChart);
+  const sizeColumn=Math.max(0,studioSizing.sizeColumn(d.sizeChart));
+  const sizes=studioSizing.detailSizes(d);
+  function syncSize(){
+    if(sizeChart)for(const row of sizeChart.querySelectorAll('tbody tr')){
+      row.toggleAttribute('data-selected-size',!!selectedSize&&studioSizing.sizeKey(row.cells[sizeColumn]?.textContent)===studioSizing.sizeKey(selectedSize));
+    }
+    const caption=detail.querySelector('.purchase-selected-size');if(caption){caption.hidden=!selectedSize;caption.textContent=selectedSize?'已选 '+selectedSize:''}
+  }
+  if(sizes.length){const section=element('section','data-block'),title=element('h2','','选择尺码'),options=element('div','size-options');options.setAttribute('role','group');options.setAttribute('aria-label','选择尺码');const slider=element('span','size-slider');slider.setAttribute('aria-hidden','true');options.append(slider);sizes.forEach((size,index)=>{const button=element('button','size-option',size);button.type='button';button.setAttribute('aria-pressed',String(index===0));if(index===0)selectedSize=size;button.onclick=()=>{selectedSize=size;options.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));moveSlider();syncSize()};options.append(button)});section.append(title,options);appendDataBlock(section)}
+  if(sizeChart)detailRight.append(element('p','measure-note','* 手工测量存在细微误差，仅供参考'));
+  const hasPrice=d.priceEnabled!==false&&typeof d.price==='number'&&Number.isFinite(d.price);detail.classList.toggle('has-purchase',hasPrice);
+  if(hasPrice){
+    const section=element('section','data-block purchase-block'),row=element('div','purchase');
+    const price=element('div','purchase-price');price.append(element('strong','',new Intl.NumberFormat('zh-CN',{style:'currency',currency:d.currency||'CNY'}).format(d.price)));
+    if(selectedSize)price.append(element('span','purchase-selected-size'));row.append(price);
+    if(d.checkoutUrl){
+      const checkout=element('a','checkout-link','前往付款');
+      checkout.href=d.checkoutUrl;checkout.target='_blank';checkout.rel='noopener noreferrer';
+      row.append(checkout);
+    }else{
+      const button=element('button','presale-label','预售');button.type='button';button.disabled=true;row.append(button);
+    }
+    section.append(row);
+    if(d.checkoutUrl)section.append(element('p','purchase-note','跳转收银台后确认商品、尺码与金额'));
+    mountPurchase(section);
+  }
+  if(!hasPrice)mountPurchase(null);
+  syncSize();syncSelectedRack();requestAnimationFrame(()=>{moveSlider();measureScrollReveal()});
+}
+const clampProgress=value=>Math.max(0,Math.min(1,value));
+let revealObserver, revealSectionState = [], lastObservedScroll = 0, scrollingIntoDetails = true;
+function clearScrollReveal(){
+  revealObserver?.disconnect(); revealObserver = null;
+  for (const state of revealSectionState) { state.animation?.cancel(); state.block.removeAttribute("data-reveal-pending"); }
+  revealSectionState = [];
+}
+function measureScrollReveal(){
+  const alreadyVisible = keepVisibleOnReveal || detailScroll.scrollTop > 0;
+  keepVisibleOnReveal = false;
+  clearScrollReveal();
+  if(!opened || !mobileDetail() || !motionOK() || !("IntersectionObserver" in window)) return;
+  lastObservedScroll = detailScroll.scrollTop; scrollingIntoDetails = true;
+  const sections = new Map();
+  revealObserver = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      const state = sections.get(entry.target);
+      if (!entry.isIntersecting) {
+        if (entry.rootBounds && entry.boundingClientRect.top >= entry.rootBounds.bottom) {
+          state.animation?.cancel(); state.animation = null;
+          state.block.setAttribute("data-reveal-pending", "");
+        }
+      } else if (state.block.hasAttribute("data-reveal-pending")) {
+        state.block.removeAttribute("data-reveal-pending");
+        if (scrollingIntoDetails && !(alreadyVisible && state.first)) {
+          state.animation = state.block.animate([{opacity:0,transform:"translate3d(0, "+ mobileRevealDistancePx +"px,0)"},{opacity:1,transform:"none"}],{duration:mobileRevealDurationMs,easing:"linear"});
+        }
+      }
+      state.first = false;
+    }
+  }, {root:detailScroll,rootMargin:"0px 0px 96px 0px"});
+  for (const frame of detailRight.querySelectorAll(".reveal-frame")) {
+    const block = frame.firstElementChild;
+    const state = {block,first:true,animation:null};
+    block.setAttribute("data-reveal-pending", "");
+    sections.set(frame,state); revealSectionState.push(state); revealObserver.observe(frame);
+  }
+}
+detailScroll.addEventListener("scroll",()=>{
+  const scroll = Math.max(0,detailScroll.scrollTop);
+  if (scroll !== lastObservedScroll) scrollingIntoDetails = scroll > lastObservedScroll;
+  lastObservedScroll = scroll;
+},{passive:true});
+function resetReveal(){if(opened){mountPurchase();measureScrollReveal();moveSlider()}}
+window.addEventListener("resize",resetReveal);
+matchMedia("(prefers-reduced-motion:reduce)").addEventListener?.("change",resetReveal);
+function enterDetails(){if(mobileDetail()){measureScrollReveal();return}if(motionOK())detailRight.querySelectorAll(".data-block").forEach((block,i)=>detailAnimations.push(block.animate([{transform:"translateY(40px)",opacity:0},{transform:"translateY(0)",opacity:1}],{duration:650,delay:i*80,easing:"cubic-bezier(.2,.75,.25,1)",fill:"backwards"})))}
+const basicRender=render;render=function(angle){basicRender(angle);renderProductDetails()};
+const basicOpen=openDetail;openDetail=function(i,push=true){stopSwitch();const wasOpen=opened;basicOpen(i,push);syncSelectedRack();if(!wasOpen){detailScroll.scrollTop=0;enterDetails()}};
+const basicClose=closeDetail;closeDetail=function(fromHistory=false){stopSwitch();basicClose(fromHistory);syncSelectedRack();clearScrollReveal()};
+function stopSwitch(){
+  cancelCarousel();
+  detailAnimations.forEach(animation=>animation.cancel());detailAnimations=[];
+  detail.removeAttribute('aria-busy');
+}
+const preparedPhotos=new Map();
+function prepareFrontPhoto(source){
+  if(preparedPhotos.has(source))return preparedPhotos.get(source);
+  const photo=element('img');
+  photo.decoding='async';
+  const loaded=new Promise((resolve,reject)=>{
+    photo.onload=()=>resolve(photo);
+    photo.onerror=()=>reject(new Error('图片未能加载'));
+    photo.src=source;
+  }).then(async image=>{
+    if(typeof image.decode==='function')await image.decode().catch(()=>{if(!image.naturalWidth)throw Error('图片未能加载')});
+    return image;
+  });
+  let timer;
+  const work=Promise.race([loaded,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('图片加载超时')),14000)})]).finally(()=>clearTimeout(timer));
+  preparedPhotos.set(source,work);
+  if(preparedPhotos.size>10)preparedPhotos.delete(preparedPhotos.keys().next().value);
+  work.catch(()=>{if(preparedPhotos.get(source)===work)preparedPhotos.delete(source)});
+  return work;
+}
+
+// A shallow X/Z orbit with its center directly behind the selected garment.
+const orbit=element('div','detail-orbit'), orbitHint=element('span','orbit-hint');
+orbitHint.setAttribute('role','status');orbitHint.hidden=true;
+const touchHint=element('p','orbit-touch-hint','横滑或轻点两侧，切换款式');
+touchHint.hidden=true;
+art.prepend(orbit);art.append(orbitHint);art.after(touchHint);
+const orbitSlots=new Map(), knownPhotos=new Set();
+let orbitCenter=0, orbitPosition=0, orbitFrame=0, orbitWidth=0, orbitGesture=null;
+let orbitTicket=0, orbitAngleTicket=0, orbitDirection=0, orbitNotice=0, orbitHover=null, suppressTapUntil=0;
+let wantedAngle='front', angleChangedDuringSwitch=false;
+let orbitSourceItems=null, orbitCommittedIndex=-1, installingOrbitPhoto=false;
+const indexAt=key=>((key%items.length)+items.length)%items.length;
+const OrbitAngles={front:'正面',side:'侧面',back:'背面'};
+const defaultCenterImage=document.querySelector('#detailImage');
+orbit.append(defaultCenterImage);
+
+function slotFor(key){
+  if(orbitSlots.has(key))return orbitSlots.get(key);
+  const item=items[indexAt(key)];
+  const node=element('div','orbit-item'), photo=element('img','orbit-photo'), hit=element('button','orbit-hit');
+  photo.alt='';photo.draggable=false;photo.decoding='async';photo.src=item.assets.front;
+  hit.type='button';hit.setAttribute('aria-label','查看 '+item.zh);
+  hit.onclick=event=>{
+    if(event.detail&&performance.now()<suppressTapUntil)return;
+    if(key!==orbitCenter)orbitMove(Math.sign(key-orbitCenter));
+  };
+  hit.addEventListener('pointerenter',event=>{if(event.pointerType==='mouse'){orbitHover=key;paintOrbit()}});
+  hit.addEventListener('pointerleave',()=>{if(orbitHover===key){orbitHover=null;paintOrbit()}});
+  node.append(photo,hit);orbit.append(node);
+  const slot={node,photo,hit,asset:photo.src};orbitSlots.set(key,slot);
+  return slot;
+}
+function fitOrbitSlots(){
+  if(!items.length)return;
+  touchHint.hidden=items.length<2;
+  const lo=items.length===1?orbitCenter:orbitCenter-2, hi=items.length===1?orbitCenter:orbitCenter+2;
+  // Add neighbors before removing out-of-range nodes so quick reversals don't blink.
+  for(let k=lo;k<=hi;k++)slotFor(k);
+  for(const [key,slot] of orbitSlots){
+    if(key<lo||key>hi){slot.node.remove();orbitSlots.delete(key);continue}
+    slot.node.toggleAttribute('data-center',key===orbitCenter);
+    slot.hit.hidden=key!==orbitCenter-1&&key!==orbitCenter+1;
+    slot.photo.hidden=key===orbitCenter;
+  }
+}
+function paintOrbit(){
+  const w=orbitWidth||art.clientWidth||350;
+  const pitch=w*(mobileDetail()?.397:.518), camera=w*.72, step=1.04;
+  const r=pitch/(Math.sin(step)-pitch*(1-Math.cos(step))/camera);
+  for(const [key,{node}] of orbitSlots){
+    const delta=key-orbitPosition,d=Math.abs(delta),angle=delta*step;
+    const behind=r*(1-Math.cos(angle)),scale=camera/(camera+behind);
+    const x=r*Math.sin(angle)*scale,y=-.14*behind*scale;
+    const edge=.30+(orbitHover===key?.13:0);
+    const opacity=d<1?1-d*(1-edge):edge*clampProgress((1.74-d)/.74);
+    node.style.transform='translate3d('+x+'px,'+y+'px,0) scale('+scale+') perspective(760px) rotateY('+(-21*Math.max(-1,Math.min(1,delta)))+'deg)';
+    node.style.opacity=String(opacity);
+    node.style.zIndex=String(1000-Math.round(d*100));
+    node.style.visibility=d>=1.74?'hidden':'visible';
+  }
+}
+function syncOrbit(){
+  if(!items.length)return;
+  if(orbitSourceItems!==items||indexAt(orbitCenter)!==current||orbitCommittedIndex!==current){
+    const photo=document.querySelector('#detailImage');
+    orbit.append(photo);
+    for(const slot of orbitSlots.values())slot.node.remove();
+    orbitSlots.clear();orbitSourceItems=items;orbitCenter=current;orbitPosition=orbitCenter;orbitCommittedIndex=current;
+    fitOrbitSlots();slotFor(orbitCenter).node.prepend(photo);paintOrbit();
+  }
+  warmOrbit();
+}
+if(typeof ResizeObserver==='function')new ResizeObserver(entries=>{orbitWidth=entries[0].contentRect.width;paintOrbit()}).observe(art);
+else window.addEventListener('resize',()=>{orbitWidth=art.clientWidth;paintOrbit()});
+
+function orbitPhoto(source){
+  return prepareFrontPhoto(source).then(photo=>{
+    knownPhotos.add(source);if(knownPhotos.size>18)knownPhotos.delete(knownPhotos.values().next().value);
+    return photo;
+  });
+}
+function warmOrbit(){
+  if(!opened||!items.length)return;
+  for(const source of Object.values(items[current].assets))orbitPhoto(source).catch(()=>{});
+  if(items.length>1)for(const step of [-1,1])orbitPhoto(items[indexAt(orbitCenter+step)].assets.front).catch(()=>{});
+}
+function setOrbitHint(text){orbitHint.textContent=text||'';orbitHint.hidden=!text}
+function stopOrbitFrame(){if(orbitFrame)cancelAnimationFrame(orbitFrame);orbitFrame=0}
+function cancelCarousel(){
+  orbitTicket++;orbitAngleTicket++;orbitDirection=0;orbitGesture=null;stopOrbitFrame();
+  angleChangedDuringSwitch=false;orbitHover=null;
+  clearTimeout(orbitNotice);setOrbitHint('');
+  orbitPosition=orbitCenter;paintOrbit();
+}
+function animateOrbit(to,ms,onEnd){
+  stopOrbitFrame();
+  const from=orbitPosition;
+  if(!motionOK()||Math.abs(from-to)<.001){orbitPosition=to;paintOrbit();onEnd?.();return}
+  let began=performance.now();
+  function tick(time){
+    const p=clampProgress((time-began)/ms), ease=1-Math.pow(1-p,3);
+    orbitPosition=from+(to-from)*ease;paintOrbit();
+    if(p<1)orbitFrame=requestAnimationFrame(tick);
+    else{orbitFrame=0;onEnd?.()}
+  }
+  orbitFrame=requestAnimationFrame(tick);
+}
+function placeDecoded(decoded,source){
+  const old=document.querySelector('#detailImage');
+  const photo=decoded===old?old:decoded.isConnected?decoded.cloneNode(false):decoded;
+  if(old===photo)return old;
+  photo.id='detailImage';photo.className='detail-image';photo.draggable=false;photo.alt='';
+  photo.dataset.photo=source;photo.dataset.state='ready';
+  old.replaceWith(photo);
+  return photo;
+}
+const orbitBaseRender=render, orbitBaseView=setView;
+render=function(angle){
+  wantedAngle=angle||'front';
+  installingOrbitPhoto=true;
+  try{orbitBaseRender(angle)}finally{installingOrbitPhoto=false}
+  syncOrbit();
+};
+setView=function(angle){
+  wantedAngle=angle;
+  if(installingOrbitPhoto||!opened){orbitBaseView(angle);return}
+  if(orbitDirection)angleChangedDuringSwitch=true;
+  const ticket=++orbitAngleTicket,item=items[current],source=item.assets[angle];
+  if(angle===view){orbitBaseView(angle);return}
+  // The current angle alone changes; neighbor cards remain front-facing.
+  orbitPhoto(source).then(decoded=>{
+    if(ticket!==orbitAngleTicket||!opened||item!==items[current])return;
+    const old=document.querySelector('#detailImage');
+    const photo=placeDecoded(decoded,source);
+    orbitBaseView(angle);refreshDetailPhoto();
+    if(motionOK()&&old!==photo&&old.naturalWidth){
+      const ghost=old.cloneNode(false);
+      ghost.removeAttribute('id');ghost.alt='';ghost.setAttribute('aria-hidden','true');ghost.classList.add('orbit-angle-ghost');
+      photo.parentElement.querySelectorAll('.orbit-angle-ghost').forEach(node=>node.remove());
+      photo.after(ghost);
+      const animation=ghost.animate([{opacity:1},{opacity:0}],{duration:180,easing:'ease-out'});
+      animation.finished.catch(()=>{}).finally(()=>ghost.remove());
+    }
+  }).catch(()=>{if(ticket===orbitAngleTicket&&opened&&item===items[current]){orbitBaseView(angle);refreshDetailPhoto()}});
+};
+function finishOrbitSwitch(key,decoded,source,angle){
+  const scroll=detailScroll.scrollTop;
+  const focused=detail.contains(document.activeElement)&&document.activeElement.matches('.orbit-hit');
+  const photo=placeDecoded(decoded,source);
+  orbitAngleTicket++;orbitCenter=key;orbitPosition=key;orbitDirection=0;
+  current=indexAt(key);orbitCommittedIndex=current;
+  // This commit and its corresponding product data are painted together.
+  slotFor(key).node.prepend(photo);
+  for(const slot of orbitSlots.values())slot.node.querySelectorAll('.orbit-angle-ghost').forEach(g=>g.remove());
+  fitOrbitSlots();paintOrbit();
+  keepVisibleOnReveal=true;
+  render(angle);
+  detailScroll.scrollTop=scroll;
+  refreshDetailPhoto();
+  history.replaceState(null,'',pieceHash(current));
+  if(focused)slotFor(key+1).hit.focus({preventScroll:true,focusVisible:false});
+}
+function commitOrbitWhenReady(key,stamp,item,front){
+  if(stamp!==orbitTicket||!opened||item!==items[indexAt(key)])return;
+  const angle=angleChangedDuringSwitch?wantedAngle:'front';
+  if(angle==='front'){finishOrbitSwitch(key,front,item.assets.front,'front');return}
+  // Commit the front photo and product first if the requested angle is not cached.
+  // The direction remains responsive, and the angle arrives with its selector.
+  if(!knownPhotos.has(item.assets[angle])){
+    finishOrbitSwitch(key,front,item.assets.front,'front');setView(angle);return;
+  }
+  orbitPhoto(item.assets[angle]).then(decoded=>{
+    if(stamp!==orbitTicket||!opened||item!==items[indexAt(key)])return;
+    if(wantedAngle!==angle){commitOrbitWhenReady(key,stamp,item,front);return}
+    finishOrbitSwitch(key,decoded,item.assets[angle],angle);
+  }).catch(()=>{if(stamp===orbitTicket&&opened&&item===items[indexAt(key)])finishOrbitSwitch(key,front,item.assets.front,'front')});
+}
+function orbitMove(direction){
+  if(!opened||items.length<2)return;
+  if(orbitDirection&&orbitDirection!==direction){
+    // Reverse from the current visual position, not the start of the animation.
+    cancelOrbitIntent();animateOrbit(orbitCenter,175);return;
+  }
+  if(orbitDirection===direction)return;
+  const key=orbitCenter+direction,item=items[indexAt(key)],source=item.assets.front;
+  const stamp=++orbitTicket;
+  orbitDirection=direction;angleChangedDuringSwitch=false;
+  clearTimeout(orbitNotice);setOrbitHint('');
+  const ready=knownPhotos.has(source);
+  if(!ready&&motionOK()){
+    animateOrbit(orbitCenter+direction*Math.min(.68,Math.max(.12,Math.abs(orbitPosition-orbitCenter))),145);
+    orbitNotice=setTimeout(()=>{if(stamp===orbitTicket)setOrbitHint('正在准备下一件图片')},400);
+  }
+  orbitPhoto(source).then(decoded=>{
+    if(stamp!==orbitTicket||!opened||item!==items[indexAt(key)])return;
+    clearTimeout(orbitNotice);setOrbitHint('');
+    animateOrbit(key,Math.max(145,255*Math.abs(key-orbitPosition)),()=>{
+      commitOrbitWhenReady(key,stamp,item,decoded);
+    });
+  }).catch(()=>{
+    if(stamp!==orbitTicket||!opened)return;
+    cancelOrbitIntent();animateOrbit(orbitCenter,175);
+    const toast=document.querySelector('#toast');toast.textContent='图片暂时没有加载好，请再试一次。';toast.classList.add('show');
+    clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2300);
+  });
+}
+function cancelOrbitIntent(){
+  orbitTicket++;orbitDirection=0;stopOrbitFrame();
+  clearTimeout(orbitNotice);setOrbitHint('');
+}
+move=function(direction){orbitMove(direction)};
+
+art.addEventListener('touchstart',event=>{
+  if(event.touches.length!==1||items.length<2)return;
+  const t=event.touches[0];
+  orbitGesture={id:t.identifier,x:t.clientX,y:t.clientY,axis:null,base:orbitPosition,lastTime:event.timeStamp,lastX:t.clientX,speed:0};
+},{passive:true});
+art.addEventListener('touchmove',event=>{
+  const g=orbitGesture,t=event.touches[0];if(!g||!t)return;
+  if(event.touches.length!==1){if(g.axis==='x')animateOrbit(orbitCenter,170);orbitGesture=null;return}
+  const dx=t.clientX-g.x,dy=t.clientY-g.y;
+  if(!g.axis){
+    if(Math.abs(dy)>8&&Math.abs(dy)*1.15>=Math.abs(dx))g.axis='y';
+    else if(Math.abs(dx)>9&&Math.abs(dx)>Math.abs(dy)*1.35){g.axis='x';g.base=orbitPosition;cancelOrbitIntent()}
+  }
+  if(g.axis!=='x')return;
+  g.speed=(t.clientX-g.lastX)/Math.max(1,event.timeStamp-g.lastTime);g.lastX=t.clientX;g.lastTime=event.timeStamp;
+  if(motionOK()){
+    const progress=g.base-orbitCenter-dx/Math.max(130,(orbitWidth||art.clientWidth)*.53);
+    orbitPosition=orbitCenter+Math.max(-.88,Math.min(.88,progress));paintOrbit();
+  }
+},{passive:true});
+art.addEventListener('touchend',event=>{
+  const g=orbitGesture;if(!g)return;
+  const t=Array.from(event.changedTouches).find(t=>t.identifier===g.id);if(!t)return;
+  orbitGesture=null;if(g.axis!=='x')return;
+  suppressTapUntil=performance.now()+400;
+  const dx=t.clientX-g.x,progress=orbitPosition-orbitCenter;
+  const flick=event.timeStamp-g.lastTime<85&&Math.abs(dx)>27&&Math.abs(g.speed)>.45&&Math.sign(dx)===Math.sign(g.speed);
+  if(Math.abs(progress)>.28)orbitMove(Math.sign(progress));
+  else if(flick||!motionOK()&&Math.abs(dx)>55)orbitMove(dx<0?1:-1);
+  else animateOrbit(orbitCenter,170);
+},{passive:true});
+art.addEventListener('touchcancel',()=>{const g=orbitGesture;orbitGesture=null;if(g?.axis==='x')animateOrbit(orbitCenter,170)},{passive:true});
+
+const supportDialog = element('dialog', 'support-dialog');
+supportDialog.setAttribute('aria-label', '联系客服');
+const supportClose = element('button', 'support-close', '关闭 ×');
+const supportLink = element('a', '', '前往原展厅');
+supportDialog.append(supportClose, element('h2', '', '联系客服'),
+  element('p', 'support-intro', '请在原展厅留言和查看回复。'), supportLink);
+document.body.append(supportDialog);
+supportClose.onclick = () => supportDialog.close();
+supportDialog.onkeydown = event => event.stopPropagation();
+function openSupport(product) {
+  const item = product ?? (opened ? items[current] : null);
+  supportLink.href = originalShowroom + (item ? "#piece-" + encodeURIComponent(item.id) : "");
+  if (!supportDialog.open) supportDialog.showModal();
+}
+function supportButton(){
+  const button=element('button','support-entry','客服');
+  button.type='button';
+  button.onclick=()=>openSupport();
+  return button;
+}
+home.querySelector('.tools').append(supportButton());
+const detailSupport=supportButton();
+detailSupport.classList.add('detail-support');
+detail.append(detailSupport);
+
+{
+  const position = element('span','rack-position');
+  const track = element('span','rack-position-track');
+  const thumb = element('span','');
+  const slider = element('input','');
+  slider.type = 'range';
+  slider.min = '0';
+  slider.max = '1000';
+  slider.value = '0';
+  slider.disabled = true;
+  slider.setAttribute('aria-label','衣架滑动位置');
+  track.setAttribute('aria-hidden','true');
+  track.append(thumb);
+  position.append(track,slider);
+  home.querySelector('.hint').append(position);
+
+  let hidePositionTimer;
+  function hidePosition(){
+    clearTimeout(hidePositionTimer);
+    position.classList.remove('visible','dragging');
+    rackScroll.classList.remove('rack-position-drag');
+    slider.disabled = true;
+  }
+  function showPosition(){
+    const available = rackScroll.scrollWidth-rackScroll.clientWidth;
+    if(opened||available<2){hidePosition();return}
+    const progress = Math.max(0,Math.min(1,rackScroll.scrollLeft/available));
+    const thumbWidth = rackScroll.clientWidth/rackScroll.scrollWidth;
+    slider.disabled = false;
+    slider.value = String(Math.round(progress*1000));
+    thumb.style.width = thumbWidth*100+'%';
+    thumb.style.transform = 'translateX('+progress*(1/thumbWidth-1)*100+'%)';
+    position.classList.add('visible');
+    clearTimeout(hidePositionTimer);
+    if(!position.classList.contains('dragging')&&document.activeElement!==slider){
+      hidePositionTimer = setTimeout(hidePosition,500);
+    }
+  }
+  slider.addEventListener('input',()=>{
+    activate(-1);
+    rackScroll.scrollLeft = Number(slider.value)/1000*(rackScroll.scrollWidth-rackScroll.clientWidth);
+    showPosition();
+  });
+  slider.addEventListener('pointerdown',()=>{
+    position.classList.add('dragging');
+    rackScroll.classList.add('rack-position-drag');
+  });
+  slider.addEventListener('blur',showPosition);
+  for(const name of ['pointerup','pointercancel']){
+    window.addEventListener(name,()=>{
+      if(position.classList.contains('dragging')){
+        position.classList.remove('dragging');
+        rackScroll.classList.remove('rack-position-drag');
+        slider.blur();
+        showPosition();
+      }
+    });
+  }
+
+  let openingTransfer;
+  function stopRackTransfer(){
+    if(!openingTransfer)return;
+    const {photo,animation}=openingTransfer;
+    openingTransfer=null;
+    animation.cancel();
+    photo.remove();
+    detail.classList.remove('rack-transfer-open');
+  }
+  rackScroll.addEventListener('scroll',showPosition,{passive:true});
+  rackScroll.addEventListener('pointerdown',stopRackTransfer,{passive:true});
+  rackScroll.addEventListener('wheel',stopRackTransfer,{passive:true});
+
+  function loadedPhoto(image){
+    return image?.complete&&image.naturalWidth>0&&image.currentSrc;
+  }
+  function usableBounds(bounds){
+    return bounds&&Math.min(bounds.width,bounds.height)>10;
+  }
+  function fittedBounds(image,box){
+    if(!image?.naturalWidth||!usableBounds(box))return null;
+    const fit=Math.min(box.width/image.naturalWidth,box.height/image.naturalHeight);
+    const width=image.naturalWidth*fit,height=image.naturalHeight*fit;
+    return {left:box.left+(box.width-width)/2,top:box.top+(box.height-height)/2,width,height};
+  }
+  function movePhotoIntoDetail(source,from,to){
+    const photo=new Image();
+    photo.alt="";
+    photo.className="rack-transfer-photo";
+    photo.setAttribute("aria-hidden","true");
+    photo.src=source;
+    Object.assign(photo.style,{position:"fixed",left:from.left+"px",top:from.top+"px",width:from.width+"px",height:from.height+"px",objectFit:"contain",transformOrigin:"center top",zIndex:42,pointerEvents:"none"});
+    document.body.append(photo);
+    const x=to.left+to.width/2-from.left-from.width/2,y=to.top-from.top,scale=to.height/from.height;
+    const animation=photo.animate([
+      {transform:"translate(0px,0px) scale(1)"},
+      {transform:"translate("+x+"px,"+y+"px) scale("+scale+")"},
+    ],{duration:350,easing:"cubic-bezier(.2,.75,.25,1)",fill:"both"});
+    openingTransfer={photo,animation};
+    animation.onfinish=()=>{if(openingTransfer?.animation===animation)stopRackTransfer();};
+  }
+
+  const openRackDetails=openDetail;
+  openDetail=function(index,push=true){
+    hidePosition();
+    finishRackReturn();
+    stopRackTransfer();
+    const entering=!opened&&motionOK();
+    const returning=retainedAngle?.index===index&&retainedAngle.slot.isConnected?retainedAngle:null;
+    const activeSlot=rack.querySelector(".slot.active");
+    const origin=entering?(returning?.photo||(Number(activeSlot?.dataset.index)===index?activeSlot.querySelector(".view.front"):null)):null;
+    const source=loadedPhoto(origin);
+    const from=source?fittedBounds(origin,origin.getBoundingClientRect()):null;
+    if(usableBounds(from))detail.classList.add("rack-transfer-open");
+    retainedOpenAngle=returning?.angle;
+    clearRetainedAngle();
+    openRackDetails(index,push);
+    retainedOpenAngle=null;
+    if(!entering||!opened||!usableBounds(from)){detail.classList.remove("rack-transfer-open");return;}
+    const to=fittedBounds(origin,document.querySelector("#detailImage").getBoundingClientRect());
+    if(usableBounds(to))movePhotoIntoDetail(source,from,to);
+    else detail.classList.remove("rack-transfer-open");
+  };
+
+  let retainedAngle, rackReturn, restoringRack=false, retainedOpenAngle;
+  const activateRack=activate;
+  const renderRackDetail=render;
+  render=function(angle){
+    const restored=retainedOpenAngle;
+    retainedOpenAngle=null;
+    return renderRackDetail(angle||restored);
+  };
+
+  function placeRetainedPhoto(state){
+    state.photo.removeAttribute('style');
+    state.photo.className='rack-retained-photo';
+    state.slot.querySelector('.views').append(state.photo);
+  }
+  function finishRackReturn(){
+    if(!rackReturn)return;
+    const state=rackReturn;
+    rackReturn=null;
+    if(state===retainedAngle){
+      placeRetainedPhoto(state);
+    }
+    state.animations.forEach(animation=>animation.cancel());
+    detail.classList.remove('returning-to-rack','returning-photo-outside-detail');
+    home.classList.remove('returning-rack-clearing');
+  }
+  function clearRetainedAngle(){
+    if(!retainedAngle)return;
+    finishRackReturn();
+    const state=retainedAngle;
+    retainedAngle=null;
+    state.photo.remove();
+    state.slot.classList.remove('retained-angle');
+    state.slot.removeAttribute('data-return-angle');
+  }
+  activate=function(index){
+    if(retainedAngle&&!retainedAngle.slot.isConnected)clearRetainedAngle();
+    if(retainedAngle&&!opened){
+      if(restoringRack||index<0)return;
+      if(index!==retainedAngle.index)clearRetainedAngle();
+    }
+    return activateRack(index);
+  };
+  function resumeBrowsing(){
+    if(!opened&&retainedAngle){clearRetainedAngle();activateRack(-1);}
+  }
+  const scrollBrowsing=scrollRack;
+  scrollRack=function(direction){resumeBrowsing();return scrollBrowsing(direction);};
+  slider.addEventListener('input',resumeBrowsing);
+  rackScroll.addEventListener('wheel',resumeBrowsing,{passive:true});
+  let rackTouch;
+  rackScroll.addEventListener('touchstart',event=>{
+    rackTouch=event.touches.length===1?event.touches[0]:null;
+  },{passive:true});
+  rackScroll.addEventListener('touchmove',event=>{
+    if(!rackTouch||event.touches.length!==1)return;
+    const touch=event.touches[0];
+    const x=Math.abs(touch.clientX-rackTouch.clientX);
+    const y=Math.abs(touch.clientY-rackTouch.clientY);
+    if(x>9&&x>y*1.25){rackTouch=null;resumeBrowsing();}
+  },{passive:true});
+  rackScroll.addEventListener('keydown',event=>{
+    if(['ArrowLeft','ArrowRight','Home','End'].includes(event.key))resumeBrowsing();
+  });
+
+  function bringSlotIntoView(slot){
+    const scroll=rackScroll.getBoundingClientRect();
+    const picture=slot.querySelector('.views').getBoundingClientRect();
+    const center=picture.left+picture.width/2;
+    if(center<scroll.left+36||center>scroll.right-36){
+      rackScroll.scrollLeft+=center-(scroll.left+scroll.width/2);
+    }
+  }
+  function movePhotoToRack(state,from,to){
+    const photo=state.photo;
+    photo.className='rack-transfer-photo';
+    const x=to.left+to.width/2-from.left-from.width/2;
+    const y=to.top-from.top, scale=to.height/from.height;
+    Object.assign(photo.style,{
+      position:'fixed',left:from.left+'px',top:from.top+'px',width:from.width+'px',
+      height:from.height+'px',objectFit:'contain',transformOrigin:'center top',zIndex:42,pointerEvents:'none',
+    });
+    document.body.append(photo);
+    return photo.animate([
+      {transform:'translate(0px,0px) scale(1)'},
+      {transform:'translate('+x+'px,'+y+'px) scale('+scale+')'},
+    ],{duration:310,easing:'cubic-bezier(.22,.70,.28,1)',fill:'both'});
+  }
+
+  const closeRackDetails=closeDetail;
+  closeDetail=function(fromHistory=false){
+    if(!opened)return;
+    const image=document.querySelector('#detailImage');
+    const moving=openingTransfer?.photo||image;
+    const source=loadedPhoto(image);
+    const from=source&&moving?fittedBounds(image,moving.getBoundingClientRect()):null;
+    const rail=detailScroll.getBoundingClientRect();
+    const visibleHeight=from?Math.max(0,Math.min(from.top+from.height,rail.bottom)-Math.max(from.top,rail.top)):0;
+    const slot=rack.querySelector('.slot[data-index="'+current+'"]');
+    stopRackTransfer();
+    if(!slot||!source){closeRackDetails(fromHistory);return;}
+
+    const replacement=image.cloneNode(false);
+    image.replaceWith(replacement);
+    image.removeAttribute('id');
+    image.removeAttribute('style');
+    const state={index:current,photo:image,angle:view,slot,animations:[]};
+    retainedAngle=state;
+    slot.classList.add('retained-angle');
+    slot.dataset.returnAngle=view;
+
+    home.classList.add('returning-rack-aligning');
+    activateRack(current);
+    bringSlotIntoView(slot);
+    const to=fittedBounds(image,slot.querySelector('.views').getBoundingClientRect());
+    const flies=motionOK()&&to&&usableBounds(from)&&visibleHeight/from.height>=.60;
+    if(motionOK()){
+      detail.classList.add('returning-to-rack');
+      home.classList.add('returning-rack-clearing');
+      if(from&&visibleHeight>0)detail.classList.add('returning-photo-outside-detail');
+    }
+    restoringRack=true;
+    try{
+      closeRackDetails(fromHistory);
+      slot.querySelector('.piece').focus({preventScroll:true});
+    }finally{restoringRack=false;home.classList.remove('returning-rack-aligning');}
+
+    if(!motionOK()){
+      placeRetainedPhoto(state);
+      return;
+    }
+    rackReturn=state;
+    const panel=detail.animate([{opacity:1},{opacity:0}],{
+      duration:flies?200:220,easing:'ease-out',fill:'both',
+    });
+    state.animations.push(panel);
+    const mover=flies?movePhotoToRack(state,from,to):null;
+    if(mover)state.animations.push(mover);
+    const last=mover||panel;
+    last.onfinish=()=>{if(rackReturn===state)finishRackReturn();};
+  };
+  matchMedia('(prefers-reduced-motion:reduce)').addEventListener?.('change',()=>{stopRackTransfer();finishRackReturn();});
+}
+
+prepare();
+</script></body></html>
