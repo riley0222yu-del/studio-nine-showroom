@@ -1,0 +1,72 @@
+name: Verify showroom 1
+on:
+  push:
+    branches: [prepare-showroom-1]
+    paths: [.github/workflows/verify-showroom-1.yml]
+permissions:
+  contents: read
+  statuses: write
+jobs:
+  check:
+    if: github.repository == 'riley0222yu-del/studio-nine-showroom'
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 62ca02454f1a2d24f2f966869d20fb794af273f5
+          persist-credentials: false
+      - name: Check the deployed page and every image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFile } from 'node:fs/promises';
+          import { setTimeout } from 'node:timers/promises';
+          const root = 'https://riley0222yu-del.github.io/studio-nine-showroom/';
+          const expected = await readFile('showroom-1/index.html', 'utf8');
+          const statusUrl = 'https://api.github.com/repos/riley0222yu-del/studio-nine-showroom/statuses/62ca02454f1a2d24f2f966869d20fb794af273f5';
+          async function status(state, description) {
+            const result = await fetch(statusUrl, {
+              method: 'POST',
+              headers: { Authorization: 'Bearer ' + process.env.GH_TOKEN, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ state, description: description.slice(0, 139), context: 'Showroom 1 live', target_url: root + 'showroom-1/' }),
+            });
+            assert(result.ok, 'Could not report the result: ' + result.status);
+          }
+          async function fetchPublic(path) {
+            const response = await fetch(root + path, { signal: AbortSignal.timeout(12000), headers: { 'Cache-Control': 'no-cache' } });
+            if (!response.ok) throw Error('HTTP ' + response.status + ' for ' + path);
+            return response;
+          }
+          try {
+            await status('pending', 'Waiting for the new GitHub Pages deployment.');
+            let uploaded = false;
+            let failed;
+            for (let attempt = 0; attempt < 12 && !uploaded; attempt++) {
+              try {
+                const page = await fetchPublic('showroom-1/?check=62ca024');
+                uploaded = await page.text() === expected;
+                if (!uploaded) failed = 'HTML did not match the published commit.';
+              } catch (error) { failed = error.message; }
+              if (!uploaded && attempt < 11) await setTimeout(9000);
+            }
+            assert(uploaded, failed);
+            const items = JSON.parse(expected.match(/^  items = (\[.*\]);$/m)[1]);
+            const photos = [...new Set(items.flatMap(item => Object.values(item.assets)))];
+            for (let start = 0; start < photos.length; start += 6) {
+              await Promise.all(photos.slice(start, start + 6).map(async path => {
+                const response = await fetchPublic(path);
+                assert.match(response.headers.get('content-type'), /^image\//);
+                assert(Buffer.from(await response.arrayBuffer()).equals(await readFile(path)), 'Different image: ' + path);
+              }));
+            }
+            await status('success', 'HTTP 200. Verified ' + items.length + ' items and all ' + photos.length + ' public images.');
+          } catch (error) {
+            await status('failure', error.message);
+            throw error;
+          }
+          NODE
